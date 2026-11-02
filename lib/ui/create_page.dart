@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import '../engine/models.dart';
 import '../engine/progress_engine.dart';
 import 'app_scope.dart';
+import '../l10n/app_localizations.dart';
 
 class CreatePage extends StatefulWidget {
   const CreatePage({super.key});
@@ -36,9 +37,10 @@ class _CreatePageState extends State<CreatePage> {
   }
 
   Future<void> _submit() async {
+    final l10n = AppLocalizations.of(context)!;
     final name = _name.text.trim();
     if (name.isEmpty) {
-      setState(() => _nameError = '请填写名称');
+      setState(() => _nameError = l10n.errNameEmpty);
       return;
     }
     final grade = int.tryParse(_grade.text.trim());
@@ -47,13 +49,13 @@ class _CreatePageState extends State<CreatePage> {
     final beginG = int.tryParse(_beginG.text.trim());
     if (grade == null || begin == null || plus == null || beginG == null ||
         grade < 1 || begin < 0 || plus < 1 || beginG < 0) {
-      _toast('请填写合法数值：阶数≥1，起始数/起始阶数≥0，增加量≥1');
+      _toast(l10n.errInvalidParams);
       return;
     }
     final repo = AppScope.of(context).repository;
     final items = await repo.listItems();
     if (items.any((e) => e.name == name)) {
-      setState(() => _nameError = '名称已存在');
+      setState(() => _nameError = l10n.errNameExists);
       return;
     }
     setState(() => _nameError = null);
@@ -71,7 +73,7 @@ class _CreatePageState extends State<CreatePage> {
     final id = await repo.createItem(item);
     await repo.saveProgress(id, ProgressEngine.initialState(item));
     if (!mounted) return;
-    _toast('已创建「$name」');
+    _toast(l10n.toastCreated(name));
     Navigator.of(context).pop();
   }
 
@@ -82,43 +84,44 @@ class _CreatePageState extends State<CreatePage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: AppBar(title: const Text('新建训练任务')),
+      appBar: AppBar(title: Text(l10n.createTitle)),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          _field('训练项名称 *', controller: _name, error: _nameError),
+          _field(l10n.fieldName, controller: _name, error: _nameError, hint: l10n.hintName),
           Row(
             children: [
-              Expanded(child: _numField('阶数 *', _grade)),
+              Expanded(child: _numField(l10n.fieldGrade, _grade)),
               const SizedBox(width: 12),
-              Expanded(child: _numField('起始数 *', _begin)),
+              Expanded(child: _numField(l10n.fieldBeginNum, _begin)),
             ],
           ),
           const SizedBox(height: 14),
           Row(
             children: [
-              Expanded(child: _numField('增加量 *', _plus)),
+              Expanded(child: _numField(l10n.fieldPlus, _plus)),
               const SizedBox(width: 12),
-              Expanded(child: _numField('起始阶数 *', _beginG)),
+              Expanded(child: _numField(l10n.fieldBeginGrade, _beginG)),
             ],
           ),
           const SizedBox(height: 14),
           Row(
             children: [
-              Expanded(child: _unitField()),
+              Expanded(child: _unitField(l10n)),
               const SizedBox(width: 12),
-              Expanded(child: _failField()),
+              Expanded(child: _failField(l10n)),
             ],
           ),
           const SizedBox(height: 20),
-          FilledButton(onPressed: _submit, child: const Text('提交 · 创建任务')),
+          FilledButton(onPressed: _submit, child: Text(l10n.submitCreate)),
         ],
       ),
     );
   }
 
-  Widget _field(String label, {required TextEditingController controller, String? error}) {
+  Widget _field(String label, {required TextEditingController controller, String? error, String? hint}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 14),
       child: Column(
@@ -133,7 +136,7 @@ class _CreatePageState extends State<CreatePage> {
             onChanged: (_) {
               if (error != null) setState(() => _nameError = null);
             },
-            decoration: InputDecoration(errorText: error, hintText: '如：胸肌卧推'),
+            decoration: InputDecoration(errorText: error, hintText: hint),
           ),
         ],
       ),
@@ -160,22 +163,22 @@ class _CreatePageState extends State<CreatePage> {
     );
   }
 
-  Widget _unitField() {
+  Widget _unitField(AppLocalizations l10n) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 14),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Padding(
-            padding: EdgeInsets.only(left: 2, bottom: 6),
-            child: Text('单位', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
+          Padding(
+            padding: const EdgeInsets.only(left: 2, bottom: 6),
+            child: Text(l10n.fieldUnit, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
           ),
           DropdownButtonFormField<String>(
             initialValue: _unit,
-            items: const [
-              DropdownMenuItem(value: '次', child: Text('次')),
-              DropdownMenuItem(value: '个', child: Text('个')),
-              DropdownMenuItem(value: 'kg', child: Text('kg')),
+            items: [
+              DropdownMenuItem(value: '次', child: Text(l10n.unitReps)),
+              DropdownMenuItem(value: '个', child: Text(l10n.unitPieces)),
+              DropdownMenuItem(value: 'kg', child: Text(l10n.unitKg)),
             ],
             onChanged: (v) => setState(() => _unit = v!),
             decoration: const InputDecoration(),
@@ -185,21 +188,21 @@ class _CreatePageState extends State<CreatePage> {
     );
   }
 
-  Widget _failField() {
+  Widget _failField(AppLocalizations l10n) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 14),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Padding(
-            padding: EdgeInsets.only(left: 2, bottom: 6),
-            child: Text('未完成规则', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
+          Padding(
+            padding: const EdgeInsets.only(left: 2, bottom: 6),
+            child: Text(l10n.fieldFailRule, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
           ),
           DropdownButtonFormField<String>(
             initialValue: _failRule,
-            items: const [
-              DropdownMenuItem(value: '停留', child: Text('停留')),
-              DropdownMenuItem(value: '回退', child: Text('回退')),
+            items: [
+              DropdownMenuItem(value: '停留', child: Text(l10n.failStay)),
+              DropdownMenuItem(value: '回退', child: Text(l10n.failRecede)),
             ],
             onChanged: (v) => setState(() => _failRule = v!),
             decoration: const InputDecoration(),

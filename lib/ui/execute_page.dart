@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import '../engine/models.dart';
 import '../engine/progress_engine.dart';
 import 'app_scope.dart';
+import '../l10n/app_localizations.dart';
 import 'theme.dart';
 
 class ExecutePage extends StatefulWidget {
@@ -31,6 +32,7 @@ class _ExecutePageState extends State<ExecutePage> {
   int get _done => _checked.where((e) => e).length;
 
   Future<void> _confirmDone() async {
+    final l10n = AppLocalizations.of(context)!;
     final repo = AppScope.of(context).repository;
     final item = widget.item;
     final cur = await repo.getProgress(item.id!) ?? ProgressEngine.initialState(item);
@@ -51,16 +53,18 @@ class _ExecutePageState extends State<ExecutePage> {
       createdAt: DateTime.now().toIso8601String(),
     ));
     if (!mounted) return;
-    _toast(next == null ? '全部完成，已收官' : '已完成并晋级');
+    _toast(next == null ? l10n.toastDoneFinish : l10n.toastAdvance);
     Navigator.of(context).pop();
   }
 
   Future<void> _markFail() async {
+    final l10n = AppLocalizations.of(context)!;
     final repo = AppScope.of(context).repository;
     final item = widget.item;
     final cur = await repo.getProgress(item.id!) ?? ProgressEngine.initialState(item);
     final st = ProgressEngine.recede(item, cur);
     await repo.saveProgress(item.id!, st);
+    final rule = item.failRule == 'RECEDE' ? l10n.failRecede : l10n.failStay;
     await repo.addLog(LogEntry(
       itemId: item.id!,
       logDate: DateTime.now().toIso8601String().substring(0, 10),
@@ -69,11 +73,11 @@ class _ExecutePageState extends State<ExecutePage> {
       rep: cur.rep,
       target: ProgressEngine.seqToString(_seq),
       result: 'FAIL',
-      note: item.failRule == 'RECEDE' ? '回退' : '停留',
+      note: rule,
       createdAt: DateTime.now().toIso8601String(),
     ));
     if (!mounted) return;
-    _toast('已标记未完成 · ${item.failRule == 'RECEDE' ? '回退' : '停留'}');
+    _toast(l10n.toastFail(rule));
     Navigator.of(context).pop();
   }
 
@@ -84,19 +88,20 @@ class _ExecutePageState extends State<ExecutePage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final total = _seq.length;
     final pct = total == 0 ? 0.0 : _done / total;
     return Scaffold(
-      appBar: AppBar(title: const Text('执行任务')),
+      appBar: AppBar(title: Text(l10n.executeTitle)),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
           Row(
             children: [
-              const Text('本次要完成',
-                  style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700)),
+              Text(l10n.todayTarget,
+                  style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w700)),
               const Spacer(),
-              Text('已勾选 $_done / $total 项',
+              Text(l10n.checkedCount(_done, total),
                   style: const TextStyle(fontSize: 12, color: AppColors.mut)),
             ],
           ),
@@ -121,10 +126,10 @@ class _ExecutePageState extends State<ExecutePage> {
           const SizedBox(height: 8),
           FilledButton(
             onPressed: _done == total ? _confirmDone : null,
-            child: const Text('确认完成'),
+            child: Text(l10n.confirmDone),
           ),
           const SizedBox(height: 10),
-          OutlinedButton(onPressed: _markFail, child: const Text('标记未完成')),
+          OutlinedButton(onPressed: _markFail, child: Text(l10n.markFail)),
         ],
       ),
     );
@@ -179,7 +184,7 @@ class _CheckItem extends StatelessWidget {
                     fontSize: 17,
                     fontWeight: FontWeight.w600)),
             const Spacer(),
-            Text('第 ${index + 1} 项',
+            Text(AppLocalizations.of(context)!.itemIndex(index + 1),
                 style: const TextStyle(fontSize: 12, color: AppColors.mut)),
           ],
         ),

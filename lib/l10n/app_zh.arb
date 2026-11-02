@@ -1,0 +1,111 @@
+{
+  "@@locale": "zh",
+  "appTitle": "进阶训练器",
+  "appSlogan": "撕裂壁垒 · 含泪上行",
+  "newTask": "新建任务",
+  "emptyTitle": "还没有训练任务",
+  "emptySubtitle": "创建第一个训练项，从第 1 级开始逐步突破",
+  "emptyCta": "新建第一个训练任务",
+  "statusDone": "已完成",
+  "statusActive": "训练中",
+
+  "createTitle": "新建训练任务",
+  "fieldName": "训练项名称 *",
+  "fieldGrade": "阶数 *",
+  "fieldBeginNum": "起始数 *",
+  "fieldPlus": "增加量 *",
+  "fieldBeginGrade": "起始阶数 *",
+  "fieldUnit": "单位",
+  "fieldFailRule": "未完成规则",
+  "hintName": "如：胸肌卧推",
+  "errNameEmpty": "请填写名称",
+  "errNameExists": "名称已存在",
+  "errInvalidParams": "请填写合法数值：阶数≥1，起始数/起始阶数≥0，增加量≥1",
+  "submitCreate": "提交 · 创建任务",
+  "toastCreated": "已创建「{name}」",
+  "@toastCreated": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+
+  "unitReps": "次",
+  "unitPieces": "个",
+  "unitKg": "kg",
+  "failStay": "停留",
+  "failRecede": "回退",
+
+  "detailTitle": "任务详情",
+  "taskNotFound": "任务不存在",
+  "unitLabel": "单位：{unit}",
+  "@unitLabel": {
+    "placeholders": {
+      "unit": { "type": "String" }
+    }
+  },
+  "seqCount": "本次序列 · 共 {count} 项",
+  "@seqCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "levelProgress": "本级进度：已完成 {done} / 共需 {need} 次",
+  "@levelProgress": {
+    "placeholders": {
+      "done": { "type": "int" },
+      "need": { "type": "int" }
+    }
+  },
+  "confirmContinue": "确认继续执行",
+
+  "executeTitle": "执行任务",
+  "todayTarget": "本次要完成",
+  "checkedCount": "已勾选 {done} / {total} 项",
+  "@checkedCount": {
+    "placeholders": {
+      "done": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "confirmDone": "确认完成",
+  "markFail": "标记未完成",
+  "itemIndex": "第 {index} 项",
+  "@itemIndex": {
+    "placeholders": {
+      "index": { "type": "int" }
+    }
+  },
+  "toastDoneFinish": "全部完成，已收官",
+  "toastAdvance": "已完成并晋级",
+  "toastFail": "已标记未完成 · {rule}",
+  "@toastFail": {
+    "placeholders": {
+      "rule": { "type": "String" }
+    }
+  },
+
+  "gradePosEven": "准第{n}阶",
+  "@gradePosEven": {
+    "placeholders": {
+      "n": { "type": "int" }
+    }
+  },
+  "gradePosOdd": "正第{n}阶",
+  "@gradePosOdd": {
+    "placeholders": {
+      "n": { "type": "int" }
+    }
+  },
+  "levelPos": "第{n}级",
+  "@levelPos": {
+    "placeholders": {
+      "n": { "type": "int" }
+    }
+  },
+  "repPos": "第{n}次",
+  "@repPos": {
+    "placeholders": {
+      "n": { "type": "int" }
+    }
+  }
+}

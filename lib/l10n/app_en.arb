@@ -1,0 +1,111 @@
+{
+  "@@locale": "en",
+  "appTitle": "Advance Trainer",
+  "appSlogan": "Tear through barriers, bearing tears on the ascent",
+  "newTask": "New Task",
+  "emptyTitle": "No training tasks yet",
+  "emptySubtitle": "Create your first training item and push through, starting from Level 1",
+  "emptyCta": "Create your first training task",
+  "statusDone": "Done",
+  "statusActive": "In progress",
+
+  "createTitle": "New Training Task",
+  "fieldName": "Training item name *",
+  "fieldGrade": "Grade *",
+  "fieldBeginNum": "Start number *",
+  "fieldPlus": "Increment *",
+  "fieldBeginGrade": "Start grade *",
+  "fieldUnit": "Unit",
+  "fieldFailRule": "On failure",
+  "hintName": "e.g. Bench press",
+  "errNameEmpty": "Please enter a name",
+  "errNameExists": "This name already exists",
+  "errInvalidParams": "Enter valid numbers: grade≥1, start number/start grade≥0, increment≥1",
+  "submitCreate": "Submit · Create task",
+  "toastCreated": "Created \"{name}\"",
+  "@toastCreated": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+
+  "unitReps": "reps",
+  "unitPieces": "pieces",
+  "unitKg": "kg",
+  "failStay": "Stay",
+  "failRecede": "Recede",
+
+  "detailTitle": "Task Detail",
+  "taskNotFound": "Task not found",
+  "unitLabel": "Unit: {unit}",
+  "@unitLabel": {
+    "placeholders": {
+      "unit": { "type": "String" }
+    }
+  },
+  "seqCount": "Sequence · {count} items",
+  "@seqCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "levelProgress": "Level progress: {done} / {need} done",
+  "@levelProgress": {
+    "placeholders": {
+      "done": { "type": "int" },
+      "need": { "type": "int" }
+    }
+  },
+  "confirmContinue": "Continue",
+
+  "executeTitle": "Execute Task",
+  "todayTarget": "Complete this session",
+  "checkedCount": "Checked {done} / {total}",
+  "@checkedCount": {
+    "placeholders": {
+      "done": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "confirmDone": "Confirm & Complete",
+  "markFail": "Mark incomplete",
+  "itemIndex": "Item {index}",
+  "@itemIndex": {
+    "placeholders": {
+      "index": { "type": "int" }
+    }
+  },
+  "toastDoneFinish": "All done — training complete",
+  "toastAdvance": "Completed and advanced",
+  "toastFail": "Marked incomplete · {rule}",
+  "@toastFail": {
+    "placeholders": {
+      "rule": { "type": "String" }
+    }
+  },
+
+  "gradePosEven": "Stage {n}",
+  "@gradePosEven": {
+    "placeholders": {
+      "n": { "type": "int" }
+    }
+  },
+  "gradePosOdd": "Stage {n}",
+  "@gradePosOdd": {
+    "placeholders": {
+      "n": { "type": "int" }
+    }
+  },
+  "levelPos": "Level {n}",
+  "@levelPos": {
+    "placeholders": {
+      "n": { "type": "int" }
+    }
+  },
+  "repPos": "Rep {n}",
+  "@repPos": {
+    "placeholders": {
+      "n": { "type": "int" }
+    }
+  }
+}

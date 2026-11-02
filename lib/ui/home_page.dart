@@ -8,7 +8,9 @@ import '../engine/progress_engine.dart';
 import 'app_scope.dart';
 import 'create_page.dart';
 import 'detail_page.dart';
+import '../l10n/app_localizations.dart';
 import 'theme.dart';
+import 'title_format.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -29,6 +31,7 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> _load() async {
     setState(() => _loading = true);
+    final l10n = AppLocalizations.of(context)!;
     final repo = AppScope.of(context).repository;
     final items = await repo.listItems();
     final cards = <_CardData>[];
@@ -38,7 +41,7 @@ class _HomePageState extends State<HomePage> {
       cards.add(_CardData(
         item: it,
         done: it.status == 'DONE',
-        title: d.title,
+        title: localizedPosition(l10n, d),
         seq: ProgressEngine.seqToString(d.sequence),
       ));
     }
@@ -65,13 +68,14 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Column(
+        title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text('进阶训练器', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
-            Text('撕裂壁垒 · 含泪上行',
-                style: TextStyle(fontSize: 10, letterSpacing: 1, color: Color(0xFFc9c2b6))),
+            Text(AppLocalizations.of(context)!.appTitle,
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+            Text(AppLocalizations.of(context)!.appSlogan,
+                style: const TextStyle(fontSize: 10, letterSpacing: 1, color: Color(0xFFc9c2b6))),
           ],
         ),
         actions: [
@@ -80,7 +84,7 @@ class _HomePageState extends State<HomePage> {
             child: FilledButton.icon(
               onPressed: _openCreate,
               icon: const Icon(Icons.add, size: 18),
-              label: const Text('新建任务'),
+              label: Text(AppLocalizations.of(context)!.newTask),
               style: FilledButton.styleFrom(
                 minimumSize: const Size(0, 38),
                 padding: const EdgeInsets.symmetric(horizontal: 14),
@@ -186,6 +190,7 @@ class _StatusPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final color = done ? AppColors.ok : AppColors.acc;
     final bg = done ? AppColors.okSoft : AppColors.accSoft;
     return Container(
@@ -196,7 +201,7 @@ class _StatusPill extends StatelessWidget {
         children: [
           Container(width: 6, height: 6, decoration: BoxDecoration(color: color, shape: BoxShape.circle)),
           const SizedBox(width: 5),
-          Text(done ? '已完成' : '训练中',
+          Text(done ? l10n.statusDone : l10n.statusActive,
               style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: color)),
         ],
       ),
@@ -210,6 +215,7 @@ class _Empty extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24),
@@ -218,13 +224,13 @@ class _Empty extends StatelessWidget {
           children: [
             Icon(Icons.workspace_premium_outlined, size: 48, color: AppColors.dim),
             const SizedBox(height: 12),
-            const Text('还没有训练任务',
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
+            Text(l10n.emptyTitle,
+                style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
             const SizedBox(height: 6),
-            Text('创建第一个训练项，从第 1 级开始逐步突破',
+            Text(l10n.emptySubtitle,
                 style: TextStyle(fontSize: 13, color: AppColors.mut)),
             const SizedBox(height: 18),
-            FilledButton(onPressed: onCreate, child: const Text('新建第一个训练任务')),
+            FilledButton(onPressed: onCreate, child: Text(l10n.emptyCta)),
           ],
         ),
       ),
