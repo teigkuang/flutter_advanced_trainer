@@ -58,6 +58,26 @@ void main() {
     });
   });
 
+  group('已取得的成绩 totalCompleted（对照算法仓验算）', () {
+    final item = _defaultItem();
+
+    test('初始态 (0,0,0) → 0（待开始）', () {
+      expect(ProgressEngine.totalCompleted(item, const ProgressState(0, 0, 0)), 0);
+    });
+
+    test('第 36 次状态 (5,0,3) → 已完成 35 次', () {
+      expect(ProgressEngine.totalCompleted(item, const ProgressState(5, 0, 3)), 35);
+    });
+
+    test('(2,1,0) → 已完成 6 次（0、1 阶全满 + 2 阶第1级 0 次）', () {
+      expect(ProgressEngine.totalCompleted(item, const ProgressState(2, 1, 0)), 6);
+    });
+
+    test('第 2 次 (0,0,1) → 已完成 1 次', () {
+      expect(ProgressEngine.totalCompleted(item, const ProgressState(0, 0, 1)), 1);
+    });
+  });
+
   group('推进 advance', () {
     final item = _defaultItem();
 

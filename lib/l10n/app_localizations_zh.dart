@@ -13,7 +13,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get appTitle => '进阶训练器';
 
   @override
-  String get appSlogan => '撕裂壁垒 · 含泪上行';
+  String get appSlogan => '撕裂壁垒 · 努力进取';
 
   @override
   String get newTask => '新建任务';
@@ -34,6 +34,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get statusActive => '训练中';
 
   @override
+  String get statusWait => '待开始';
+
+  @override
   String get createTitle => '新建训练任务';
 
   @override
@@ -52,13 +55,19 @@ class AppLocalizationsZh extends AppLocalizations {
   String get fieldBeginGrade => '起始阶数 *';
 
   @override
-  String get fieldUnit => '单位';
+  String get fieldMethod => '训练方式';
+
+  @override
+  String get fieldGoal => '具体实施目标';
 
   @override
   String get fieldFailRule => '未完成规则';
 
   @override
   String get hintName => '如：胸肌卧推';
+
+  @override
+  String get hintGoal => '如：每日 50 个俯卧撑，每组间隔 1 分钟';
 
   @override
   String get errNameEmpty => '请填写名称';
@@ -78,13 +87,16 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get unitReps => '次';
+  String get methodSport => '运动';
 
   @override
-  String get unitPieces => '个';
+  String get methodStudy => '学习';
 
   @override
-  String get unitKg => 'kg';
+  String get methodTask => '任务';
+
+  @override
+  String get methodOther => '其他';
 
   @override
   String get failStay => '停留';
@@ -93,14 +105,24 @@ class AppLocalizationsZh extends AppLocalizations {
   String get failRecede => '回退';
 
   @override
+  String achievedCount(int n) {
+    return '已完成 $n 次';
+  }
+
+  @override
   String get detailTitle => '任务详情';
 
   @override
   String get taskNotFound => '任务不存在';
 
   @override
-  String unitLabel(String unit) {
-    return '单位：$unit';
+  String methodLabel(String method) {
+    return '训练方式：$method';
+  }
+
+  @override
+  String goalHint(String goal) {
+    return '具体实施目标：$goal';
   }
 
   @override

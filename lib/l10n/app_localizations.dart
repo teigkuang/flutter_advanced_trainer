@@ -107,7 +107,7 @@ abstract class AppLocalizations {
   /// No description provided for @appSlogan.
   ///
   /// In en, this message translates to:
-  /// **'Tear through barriers, bearing tears on the ascent'**
+  /// **'Tear through barriers, strive upward'**
   String get appSlogan;
 
   /// No description provided for @newTask.
@@ -146,6 +146,12 @@ abstract class AppLocalizations {
   /// **'In progress'**
   String get statusActive;
 
+  /// No description provided for @statusWait.
+  ///
+  /// In en, this message translates to:
+  /// **'Not started'**
+  String get statusWait;
+
   /// No description provided for @createTitle.
   ///
   /// In en, this message translates to:
@@ -182,11 +188,17 @@ abstract class AppLocalizations {
   /// **'Start grade *'**
   String get fieldBeginGrade;
 
-  /// No description provided for @fieldUnit.
+  /// No description provided for @fieldMethod.
   ///
   /// In en, this message translates to:
-  /// **'Unit'**
-  String get fieldUnit;
+  /// **'Training method'**
+  String get fieldMethod;
+
+  /// No description provided for @fieldGoal.
+  ///
+  /// In en, this message translates to:
+  /// **'Specific goal'**
+  String get fieldGoal;
 
   /// No description provided for @fieldFailRule.
   ///
@@ -199,6 +211,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'e.g. Bench press'**
   String get hintName;
+
+  /// No description provided for @hintGoal.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. 50 push-ups daily, 1 min rest between sets'**
+  String get hintGoal;
 
   /// No description provided for @errNameEmpty.
   ///
@@ -230,23 +248,29 @@ abstract class AppLocalizations {
   /// **'Created \"{name}\"'**
   String toastCreated(String name);
 
-  /// No description provided for @unitReps.
+  /// No description provided for @methodSport.
   ///
   /// In en, this message translates to:
-  /// **'reps'**
-  String get unitReps;
+  /// **'Sport'**
+  String get methodSport;
 
-  /// No description provided for @unitPieces.
+  /// No description provided for @methodStudy.
   ///
   /// In en, this message translates to:
-  /// **'pieces'**
-  String get unitPieces;
+  /// **'Study'**
+  String get methodStudy;
 
-  /// No description provided for @unitKg.
+  /// No description provided for @methodTask.
   ///
   /// In en, this message translates to:
-  /// **'kg'**
-  String get unitKg;
+  /// **'Task'**
+  String get methodTask;
+
+  /// No description provided for @methodOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get methodOther;
 
   /// No description provided for @failStay.
   ///
@@ -260,6 +284,12 @@ abstract class AppLocalizations {
   /// **'Recede'**
   String get failRecede;
 
+  /// No description provided for @achievedCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed {n} reps'**
+  String achievedCount(int n);
+
   /// No description provided for @detailTitle.
   ///
   /// In en, this message translates to:
@@ -272,11 +302,17 @@ abstract class AppLocalizations {
   /// **'Task not found'**
   String get taskNotFound;
 
-  /// No description provided for @unitLabel.
+  /// No description provided for @methodLabel.
   ///
   /// In en, this message translates to:
-  /// **'Unit: {unit}'**
-  String unitLabel(String unit);
+  /// **'Method: {method}'**
+  String methodLabel(String method);
+
+  /// No description provided for @goalHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Specific goal: {goal}'**
+  String goalHint(String goal);
 
   /// No description provided for @seqCount.
   ///

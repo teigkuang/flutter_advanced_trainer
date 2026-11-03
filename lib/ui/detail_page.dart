@@ -103,8 +103,13 @@ class _DetailPageState extends State<DetailPage> {
                 TextSpan(text: title.split(' · ').skip(1).join(' · ')),
               ]), style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
               const SizedBox(height: 5),
-              Text(l10n.unitLabel(localizedUnit(l10n, item.metricUnit)),
-                  style: const TextStyle(fontSize: 12, color: AppColors.mut)),
+              Text.rich(TextSpan(children: [
+                TextSpan(text: l10n.methodLabel(item.trainingMethod),
+                    style: const TextStyle(fontSize: 12, color: AppColors.mut)),
+                if (item.goalText.isNotEmpty)
+                  TextSpan(text: ' · ${l10n.goalHint(item.goalText)}',
+                      style: const TextStyle(fontSize: 12, color: AppColors.mut)),
+              ])),
             ],
           ),
         ),

@@ -1,4 +1,4 @@
-/// 展示层本地化格式化：位置标题、单位映射。
+/// 展示层本地化格式化：位置标题。
 library;
 
 import '../engine/models.dart';
@@ -11,18 +11,4 @@ String localizedPosition(AppLocalizations l10n, RepData d) {
   final stage = d.grade ~/ 2;
   final grade = even ? l10n.gradePosEven(stage) : l10n.gradePosOdd(stage);
   return '$grade · ${l10n.levelPos(d.level + 1)} · ${l10n.repPos(d.rep + 1)}';
-}
-
-/// 将存储的单位码映射为当前语言的单位显示文本。
-String localizedUnit(AppLocalizations l10n, String unit) {
-  switch (unit) {
-    case '次':
-      return l10n.unitReps;
-    case '个':
-      return l10n.unitPieces;
-    case 'kg':
-      return l10n.unitKg;
-    default:
-      return unit;
-  }
 }

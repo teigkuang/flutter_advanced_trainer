@@ -1,13 +1,14 @@
 {
   "@@locale": "zh",
   "appTitle": "进阶训练器",
-  "appSlogan": "撕裂壁垒 · 含泪上行",
+  "appSlogan": "撕裂壁垒 · 努力进取",
   "newTask": "新建任务",
   "emptyTitle": "还没有训练任务",
   "emptySubtitle": "创建第一个训练项，从第 1 级开始逐步突破",
   "emptyCta": "新建第一个训练任务",
   "statusDone": "已完成",
   "statusActive": "训练中",
+  "statusWait": "待开始",
 
   "createTitle": "新建训练任务",
   "fieldName": "训练项名称 *",
@@ -15,9 +16,11 @@
   "fieldBeginNum": "起始数 *",
   "fieldPlus": "增加量 *",
   "fieldBeginGrade": "起始阶数 *",
-  "fieldUnit": "单位",
+  "fieldMethod": "训练方式",
+  "fieldGoal": "具体实施目标",
   "fieldFailRule": "未完成规则",
   "hintName": "如：胸肌卧推",
+  "hintGoal": "如：每日 50 个俯卧撑，每组间隔 1 分钟",
   "errNameEmpty": "请填写名称",
   "errNameExists": "名称已存在",
   "errInvalidParams": "请填写合法数值：阶数≥1，起始数/起始阶数≥0，增加量≥1",
@@ -29,18 +32,31 @@
     }
   },
 
-  "unitReps": "次",
-  "unitPieces": "个",
-  "unitKg": "kg",
+  "methodSport": "运动",
+  "methodStudy": "学习",
+  "methodTask": "任务",
+  "methodOther": "其他",
   "failStay": "停留",
   "failRecede": "回退",
+  "achievedCount": "已完成 {n} 次",
+  "@achievedCount": {
+    "placeholders": {
+      "n": { "type": "int" }
+    }
+  },
 
   "detailTitle": "任务详情",
   "taskNotFound": "任务不存在",
-  "unitLabel": "单位：{unit}",
-  "@unitLabel": {
+  "methodLabel": "训练方式：{method}",
+  "@methodLabel": {
     "placeholders": {
-      "unit": { "type": "String" }
+      "method": { "type": "String" }
+    }
+  },
+  "goalHint": "具体实施目标：{goal}",
+  "@goalHint": {
+    "placeholders": {
+      "goal": { "type": "String" }
     }
   },
   "seqCount": "本次序列 · 共 {count} 项",

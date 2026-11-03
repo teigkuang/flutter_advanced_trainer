@@ -1,13 +1,14 @@
 {
   "@@locale": "en",
   "appTitle": "Advance Trainer",
-  "appSlogan": "Tear through barriers, bearing tears on the ascent",
+  "appSlogan": "Tear through barriers, strive upward",
   "newTask": "New Task",
   "emptyTitle": "No training tasks yet",
   "emptySubtitle": "Create your first training item and push through, starting from Level 1",
   "emptyCta": "Create your first training task",
   "statusDone": "Done",
   "statusActive": "In progress",
+  "statusWait": "Not started",
 
   "createTitle": "New Training Task",
   "fieldName": "Training item name *",
@@ -15,9 +16,11 @@
   "fieldBeginNum": "Start number *",
   "fieldPlus": "Increment *",
   "fieldBeginGrade": "Start grade *",
-  "fieldUnit": "Unit",
+  "fieldMethod": "Training method",
+  "fieldGoal": "Specific goal",
   "fieldFailRule": "On failure",
   "hintName": "e.g. Bench press",
+  "hintGoal": "e.g. 50 push-ups daily, 1 min rest between sets",
   "errNameEmpty": "Please enter a name",
   "errNameExists": "This name already exists",
   "errInvalidParams": "Enter valid numbers: grade≥1, start number/start grade≥0, increment≥1",
@@ -29,18 +32,31 @@
     }
   },
 
-  "unitReps": "reps",
-  "unitPieces": "pieces",
-  "unitKg": "kg",
+  "methodSport": "Sport",
+  "methodStudy": "Study",
+  "methodTask": "Task",
+  "methodOther": "Other",
   "failStay": "Stay",
   "failRecede": "Recede",
+  "achievedCount": "Completed {n} reps",
+  "@achievedCount": {
+    "placeholders": {
+      "n": { "type": "int" }
+    }
+  },
 
   "detailTitle": "Task Detail",
   "taskNotFound": "Task not found",
-  "unitLabel": "Unit: {unit}",
-  "@unitLabel": {
+  "methodLabel": "Method: {method}",
+  "@methodLabel": {
     "placeholders": {
-      "unit": { "type": "String" }
+      "method": { "type": "String" }
+    }
+  },
+  "goalHint": "Specific goal: {goal}",
+  "@goalHint": {
+    "placeholders": {
+      "goal": { "type": "String" }
     }
   },
   "seqCount": "Sequence · {count} items",

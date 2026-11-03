@@ -51,7 +51,9 @@ class RepData {
 class TrainingItem {
   int? id;
   String name;
-  String metricUnit; // 数字代表单位：次 / kg / 组
+  String trainingMethod; // 训练方式：运动 / 学习 / 任务 / 其他
+  String goalText; // 具体实施目标（执行页提示）
+  String metricUnit; // 数字代表单位（旧字段，已停用：显示层由"训练方式"取代）
   int beginNum; // A 起始数
   int plusVar; // P 增加量
   int dGrade; // G 内部阶数基准（显示层"阶数" = dGrade/2 - 1）
@@ -63,7 +65,9 @@ class TrainingItem {
   TrainingItem({
     this.id,
     required this.name,
-    this.metricUnit = '次',
+    this.trainingMethod = '运动',
+    this.goalText = '',
+    this.metricUnit = '',
     required this.beginNum,
     required this.plusVar,
     required this.dGrade,

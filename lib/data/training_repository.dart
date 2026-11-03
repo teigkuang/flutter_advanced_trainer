@@ -40,6 +40,8 @@ class SqliteTrainingRepository implements TrainingRepository {
     final db = await AppDatabase.instance;
     final id = await db.insert('training_item', {
       'name': item.name,
+      'training_method': item.trainingMethod,
+      'goal_text': item.goalText,
       'metric_unit': item.metricUnit,
       'begin_num': item.beginNum,
       'plus_var': item.plusVar,
@@ -120,7 +122,9 @@ class SqliteTrainingRepository implements TrainingRepository {
   TrainingItem _itemFromRow(Map<String, Object?> row) => TrainingItem(
         id: row['id'] as int?,
         name: row['name'] as String,
-        metricUnit: (row['metric_unit'] as String?) ?? '次',
+        trainingMethod: (row['training_method'] as String?) ?? '运动',
+        goalText: (row['goal_text'] as String?) ?? '',
+        metricUnit: (row['metric_unit'] as String?) ?? '',
         beginNum: row['begin_num'] as int,
         plusVar: row['plus_var'] as int,
         dGrade: row['d_grade'] as int,

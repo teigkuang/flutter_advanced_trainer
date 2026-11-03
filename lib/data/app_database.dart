@@ -32,10 +32,29 @@ class AppDatabase {
     final path = p.join(dir.path, 'advance_trainer.db');
     _db = await openDatabase(
       path,
-      version: 1,
+      version: 2,
       onCreate: _onCreate,
+      onUpgrade: _onUpgrade,
     );
     return _db!;
+  }
+
+  static Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
+    if (oldVersion < 2) {
+      // v2：训练方式 + 具体实施目标（替代原"单位"展示）
+      for (final col in ['training_method', 'goal_text']) {
+        final exists = await _columnExists(db, 'training_item', col);
+        if (!exists) {
+          final type = col == 'training_method' ? 'TEXT' : 'TEXT';
+          await db.execute('ALTER TABLE training_item ADD COLUMN $col $type');
+        }
+      }
+    }
+  }
+
+  static Future<bool> _columnExists(Database db, String table, String column) async {
+    final rows = await db.rawQuery('PRAGMA table_info($table)');
+    return rows.any((r) => r['name'] == column);
   }
 
   static Future<void> _onCreate(Database db, int version) async {
@@ -43,6 +62,8 @@ class AppDatabase {
       CREATE TABLE training_item(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL UNIQUE,
+        training_method TEXT,
+        goal_text TEXT,
         metric_unit TEXT,
         begin_num INTEGER NOT NULL,
         plus_var INTEGER NOT NULL,

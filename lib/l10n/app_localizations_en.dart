@@ -13,7 +13,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get appTitle => 'Advance Trainer';
 
   @override
-  String get appSlogan => 'Tear through barriers, bearing tears on the ascent';
+  String get appSlogan => 'Tear through barriers, strive upward';
 
   @override
   String get newTask => 'New Task';
@@ -35,6 +35,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get statusActive => 'In progress';
 
   @override
+  String get statusWait => 'Not started';
+
+  @override
   String get createTitle => 'New Training Task';
 
   @override
@@ -53,13 +56,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get fieldBeginGrade => 'Start grade *';
 
   @override
-  String get fieldUnit => 'Unit';
+  String get fieldMethod => 'Training method';
+
+  @override
+  String get fieldGoal => 'Specific goal';
 
   @override
   String get fieldFailRule => 'On failure';
 
   @override
   String get hintName => 'e.g. Bench press';
+
+  @override
+  String get hintGoal => 'e.g. 50 push-ups daily, 1 min rest between sets';
 
   @override
   String get errNameEmpty => 'Please enter a name';
@@ -80,13 +89,16 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get unitReps => 'reps';
+  String get methodSport => 'Sport';
 
   @override
-  String get unitPieces => 'pieces';
+  String get methodStudy => 'Study';
 
   @override
-  String get unitKg => 'kg';
+  String get methodTask => 'Task';
+
+  @override
+  String get methodOther => 'Other';
 
   @override
   String get failStay => 'Stay';
@@ -95,14 +107,24 @@ class AppLocalizationsEn extends AppLocalizations {
   String get failRecede => 'Recede';
 
   @override
+  String achievedCount(int n) {
+    return 'Completed $n reps';
+  }
+
+  @override
   String get detailTitle => 'Task Detail';
 
   @override
   String get taskNotFound => 'Task not found';
 
   @override
-  String unitLabel(String unit) {
-    return 'Unit: $unit';
+  String methodLabel(String method) {
+    return 'Method: $method';
+  }
+
+  @override
+  String goalHint(String goal) {
+    return 'Specific goal: $goal';
   }
 
   @override

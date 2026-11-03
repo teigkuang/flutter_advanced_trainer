@@ -105,6 +105,18 @@ class _ExecutePageState extends State<ExecutePage> {
                   style: const TextStyle(fontSize: 12, color: AppColors.mut)),
             ],
           ),
+          if (widget.item.goalText.isNotEmpty) ...[
+            const SizedBox(height: 10),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+              decoration: BoxDecoration(
+                color: AppColors.accSoft,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(l10n.goalHint(widget.item.goalText),
+                  style: const TextStyle(fontSize: 12, color: AppColors.mut, height: 1.6)),
+            ),
+          ],
           const SizedBox(height: 10),
           ClipRRect(
             borderRadius: BorderRadius.circular(999),

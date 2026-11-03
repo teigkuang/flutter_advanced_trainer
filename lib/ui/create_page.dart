@@ -22,7 +22,8 @@ class _CreatePageState extends State<CreatePage> {
   final _begin = TextEditingController(text: '1');
   final _plus = TextEditingController(text: '1');
   final _beginG = TextEditingController(text: '0');
-  String _unit = '次';
+  final _goal = TextEditingController();
+  String _method = '运动';
   String _failRule = '停留';
   String? _nameError;
 
@@ -33,6 +34,7 @@ class _CreatePageState extends State<CreatePage> {
     _begin.dispose();
     _plus.dispose();
     _beginG.dispose();
+    _goal.dispose();
     super.dispose();
   }
 
@@ -61,7 +63,8 @@ class _CreatePageState extends State<CreatePage> {
     setState(() => _nameError = null);
     final item = TrainingItem(
       name: name,
-      metricUnit: _unit,
+      trainingMethod: _method,
+      goalText: _goal.text.trim(),
       beginNum: begin,
       plusVar: plus,
       dGrade: TrainingItem.dGradeFromDisplay(grade),
@@ -109,12 +112,14 @@ class _CreatePageState extends State<CreatePage> {
           const SizedBox(height: 14),
           Row(
             children: [
-              Expanded(child: _unitField(l10n)),
+              Expanded(child: _methodField(l10n)),
               const SizedBox(width: 12),
               Expanded(child: _failField(l10n)),
             ],
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 2),
+          _field(l10n.fieldGoal, controller: _goal, hint: l10n.hintGoal),
+          const SizedBox(height: 6),
           FilledButton(onPressed: _submit, child: Text(l10n.submitCreate)),
         ],
       ),
@@ -163,7 +168,7 @@ class _CreatePageState extends State<CreatePage> {
     );
   }
 
-  Widget _unitField(AppLocalizations l10n) {
+  Widget _methodField(AppLocalizations l10n) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 14),
       child: Column(
@@ -171,16 +176,17 @@ class _CreatePageState extends State<CreatePage> {
         children: [
           Padding(
             padding: const EdgeInsets.only(left: 2, bottom: 6),
-            child: Text(l10n.fieldUnit, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
+            child: Text(l10n.fieldMethod, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
           ),
           DropdownButtonFormField<String>(
-            initialValue: _unit,
+            initialValue: _method,
             items: [
-              DropdownMenuItem(value: '次', child: Text(l10n.unitReps)),
-              DropdownMenuItem(value: '个', child: Text(l10n.unitPieces)),
-              DropdownMenuItem(value: 'kg', child: Text(l10n.unitKg)),
+              DropdownMenuItem(value: '运动', child: Text(l10n.methodSport)),
+              DropdownMenuItem(value: '学习', child: Text(l10n.methodStudy)),
+              DropdownMenuItem(value: '任务', child: Text(l10n.methodTask)),
+              DropdownMenuItem(value: '其他', child: Text(l10n.methodOther)),
             ],
-            onChanged: (v) => setState(() => _unit = v!),
+            onChanged: (v) => setState(() => _method = v!),
             decoration: const InputDecoration(),
           ),
         ],

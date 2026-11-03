@@ -10,7 +10,6 @@ import 'create_page.dart';
 import 'detail_page.dart';
 import '../l10n/app_localizations.dart';
 import 'theme.dart';
-import 'title_format.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -31,18 +30,17 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> _load() async {
     setState(() => _loading = true);
-    final l10n = AppLocalizations.of(context)!;
     final repo = AppScope.of(context).repository;
     final items = await repo.listItems();
     final cards = <_CardData>[];
     for (final it in items) {
       final pr = await repo.getProgress(it.id!) ?? ProgressEngine.initialState(it);
-      final d = ProgressEngine.currentRepData(it, pr);
+      final total = ProgressEngine.totalCompleted(it, pr);
       cards.add(_CardData(
         item: it,
         done: it.status == 'DONE',
-        title: localizedPosition(l10n, d),
-        seq: ProgressEngine.seqToString(d.sequence),
+        wait: total == 0 && it.status != 'DONE',
+        achieved: total,
       ));
     }
     if (!mounted) return;
@@ -120,9 +118,14 @@ class _HomePageState extends State<HomePage> {
 class _CardData {
   final TrainingItem item;
   final bool done;
-  final String title;
-  final String seq;
-  const _CardData({required this.item, required this.done, required this.title, required this.seq});
+  final bool wait;
+  final int achieved;
+  const _CardData({
+    required this.item,
+    required this.done,
+    required this.wait,
+    required this.achieved,
+  });
 }
 
 class _TaskCard extends StatelessWidget {
@@ -132,6 +135,7 @@ class _TaskCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(12),
@@ -152,30 +156,13 @@ class _TaskCard extends StatelessWidget {
                   child: Text(data.item.name,
                       style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
                 ),
-                _StatusPill(done: data.done),
+                _StatusPill(done: data.done, wait: data.wait),
               ],
             ),
             const SizedBox(height: 7),
-            Text(data.title,
-                style: const TextStyle(fontSize: 12, color: AppColors.mut)),
-            const SizedBox(height: 9),
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                  decoration: BoxDecoration(
-                    color: AppColors.paper,
-                    border: Border.all(color: AppColors.line),
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: Text(data.seq,
-                      style: const TextStyle(
-                          fontFamily: 'monospace',
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          letterSpacing: 1)),
-                ),
-              ],
+            Text(
+              data.wait ? l10n.statusWait : l10n.achievedCount(data.achieved),
+              style: const TextStyle(fontSize: 12, color: AppColors.mut),
             ),
           ],
         ),
@@ -186,13 +173,14 @@ class _TaskCard extends StatelessWidget {
 
 class _StatusPill extends StatelessWidget {
   final bool done;
-  const _StatusPill({required this.done});
+  final bool wait;
+  const _StatusPill({required this.done, required this.wait});
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final color = done ? AppColors.ok : AppColors.acc;
-    final bg = done ? AppColors.okSoft : AppColors.accSoft;
+    final color = done ? AppColors.ok : (wait ? AppColors.mut : AppColors.acc);
+    final bg = done ? AppColors.okSoft : (wait ? AppColors.dim : AppColors.accSoft);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3),
       decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(999)),
@@ -201,7 +189,7 @@ class _StatusPill extends StatelessWidget {
         children: [
           Container(width: 6, height: 6, decoration: BoxDecoration(color: color, shape: BoxShape.circle)),
           const SizedBox(width: 5),
-          Text(done ? l10n.statusDone : l10n.statusActive,
+          Text(done ? l10n.statusDone : (wait ? l10n.statusWait : l10n.statusActive),
               style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: color)),
         ],
       ),
