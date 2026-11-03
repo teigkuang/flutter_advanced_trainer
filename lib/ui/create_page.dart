@@ -211,15 +211,14 @@ class _CreatePageState extends State<CreatePage> {
     );
   }
 
-  /// 自绘下拉：与父输入框一致的白底灰线圆角边框；宽度小于父控件；
-  /// 弹出面板从控件小三角下方展开（白底灰线圆角，不撑满父宽度）。
+  /// 自绘下拉：与父输入框同宽的白底灰线圆角边框；
+  /// 弹出面板纯白底、灰线圆角，宽度窄于编辑框，紧贴编辑框正下方左对齐展开。
   Widget _appDropdown(
     String label,
     List<MapEntry<String, String>> options,
     String value,
     ValueChanged<String> onChanged,
   ) {
-    const width = 150.0;
     return Padding(
       padding: const EdgeInsets.only(bottom: 14),
       child: Column(
@@ -229,25 +228,30 @@ class _CreatePageState extends State<CreatePage> {
             padding: const EdgeInsets.only(left: 2, bottom: 6),
             child: Text(label, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
           ),
-          GestureDetector(
-            onTap: () => _openMenu(context, options, value, width, onChanged),
-            child: Container(
-              width: width,
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-              decoration: BoxDecoration(
-                color: AppColors.card,
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: AppColors.line),
-              ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Text(value,
-                        style: const TextStyle(fontSize: 14, color: AppColors.ink),
-                        overflow: TextOverflow.ellipsis),
-                  ),
-                  const Icon(Icons.arrow_drop_down, color: AppColors.mut),
-                ],
+          Theme(
+            data: Theme.of(context).copyWith(
+              popupMenuTheme: const PopupMenuThemeData(color: Colors.white),
+            ),
+            child: GestureDetector(
+              onTap: () => _openMenu(context, options, value, onChanged),
+              child: Container(
+                width: double.infinity, // 与父输入框同宽
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                decoration: BoxDecoration(
+                  color: AppColors.card,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: AppColors.line),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(value,
+                          style: const TextStyle(fontSize: 14, color: AppColors.ink),
+                          overflow: TextOverflow.ellipsis),
+                    ),
+                    const Icon(Icons.arrow_drop_down, color: AppColors.mut),
+                  ],
+                ),
               ),
             ),
           ),
@@ -260,18 +264,22 @@ class _CreatePageState extends State<CreatePage> {
     BuildContext context,
     List<MapEntry<String, String>> options,
     String value,
-    double width,
     ValueChanged<String> onChanged,
   ) async {
     final box = context.findRenderObject() as RenderBox;
+    final size = box.size;
     final pos = box.localToGlobal(Offset.zero);
     final overlay = Navigator.of(context).overlay!.context.findRenderObject() as RenderBox;
     final tl = overlay.globalToLocal(pos);
+    final screenW = MediaQuery.of(context).size.width;
+    // 弹窗面板宽：窄于编辑框（编辑框约撑满列宽），并在窄屏时自适应避免越界
+    final panelW = size.width < 150 ? size.width - 12 : 150.0;
+    final left = (tl.dx + panelW > screenW - 16) ? (screenW - panelW - 16) : tl.dx;
     final rel = RelativeRect.fromLTRB(
-      tl.dx,
-      tl.dy + box.size.height,
-      tl.dx + width,
-      tl.dy + box.size.height + 320,
+      left,
+      tl.dy + size.height, // 紧贴编辑框底部
+      left + panelW,
+      tl.dy + size.height + 320,
     );
     final sel = await showMenu<String>(
       context: context,
@@ -285,7 +293,7 @@ class _CreatePageState extends State<CreatePage> {
           PopupMenuItem<String>(
             value: o.key,
             child: SizedBox(
-              width: width - 32,
+              width: panelW - 32,
               child: Text(o.value, overflow: TextOverflow.ellipsis),
             ),
           ),
