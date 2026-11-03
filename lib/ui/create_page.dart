@@ -11,7 +11,9 @@ import 'theme.dart';
 import '../l10n/app_localizations.dart';
 
 class CreatePage extends StatefulWidget {
-  const CreatePage({super.key});
+  /// 编辑模式传入待编辑任务（预填、提交走更新、保留进度）；新建传 null。
+  final TrainingItem? item;
+  const CreatePage({super.key, this.item});
 
   @override
   State<CreatePage> createState() => _CreatePageState();
@@ -24,9 +26,25 @@ class _CreatePageState extends State<CreatePage> {
   final _plus = TextEditingController(text: '1');
   final _beginG = TextEditingController(text: '0');
   final _goal = TextEditingController();
-  String _method = '运动';
-  String _failRule = '停留';
+  late String _method = widget.item?.trainingMethod ?? '运动';
+  late String _failRule = widget.item?.failRule == 'RECEDE' ? '回退' : '停留';
   String? _nameError;
+
+  bool get _isEdit => widget.item != null;
+
+  @override
+  void initState() {
+    super.initState();
+    final it = widget.item;
+    if (it != null) {
+      _name.text = it.name;
+      _grade.text = '${it.displayGrade}';
+      _begin.text = '${it.beginNum}';
+      _plus.text = '${it.plusVar}';
+      _beginG.text = '${it.displayBeginGrade}';
+      _goal.text = it.goalText;
+    }
+  }
 
   @override
   void dispose() {
@@ -57,11 +75,34 @@ class _CreatePageState extends State<CreatePage> {
     }
     final repo = AppScope.of(context).repository;
     final items = await repo.listItems();
-    if (items.any((e) => e.name == name)) {
+    if (items.any((e) => e.name == name && !(_isEdit && e.id == widget.item!.id))) {
       setState(() => _nameError = l10n.errNameExists);
       return;
     }
     setState(() => _nameError = null);
+    final failRule = _failRule == '回退' ? 'RECEDE' : 'STAY';
+    if (_isEdit) {
+      final src = widget.item!;
+      final updated = TrainingItem(
+        id: src.id,
+        name: name,
+        trainingMethod: _method,
+        goalText: _goal.text.trim(),
+        metricUnit: src.metricUnit,
+        beginNum: begin,
+        plusVar: plus,
+        dGrade: TrainingItem.dGradeFromDisplay(grade),
+        beginGrade: TrainingItem.beginGradeFromDisplay(beginG),
+        failRule: failRule,
+        status: src.status,
+        createdAt: src.createdAt,
+      );
+      await repo.updateItem(updated); // 保留既有进度，不重置
+      if (!mounted) return;
+      _toast(l10n.toastSaved(name));
+      Navigator.of(context).pop(true);
+      return;
+    }
     final item = TrainingItem(
       name: name,
       trainingMethod: _method,
@@ -70,7 +111,7 @@ class _CreatePageState extends State<CreatePage> {
       plusVar: plus,
       dGrade: TrainingItem.dGradeFromDisplay(grade),
       beginGrade: TrainingItem.beginGradeFromDisplay(beginG),
-      failRule: _failRule == '回退' ? 'RECEDE' : 'STAY',
+      failRule: failRule,
       status: 'ACTIVE',
       createdAt: DateTime.now().toIso8601String().substring(0, 10),
     );
@@ -78,7 +119,7 @@ class _CreatePageState extends State<CreatePage> {
     await repo.saveProgress(id, ProgressEngine.initialState(item));
     if (!mounted) return;
     _toast(l10n.toastCreated(name));
-    Navigator.of(context).pop();
+    Navigator.of(context).pop(true);
   }
 
   void _toast(String msg) {
@@ -90,7 +131,7 @@ class _CreatePageState extends State<CreatePage> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.createTitle)),
+      appBar: AppBar(title: Text(_isEdit ? l10n.editTitle : l10n.createTitle)),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -121,7 +162,8 @@ class _CreatePageState extends State<CreatePage> {
           const SizedBox(height: 2),
           _field(l10n.fieldGoal, controller: _goal, hint: l10n.hintGoal),
           const SizedBox(height: 6),
-          FilledButton(onPressed: _submit, child: Text(l10n.submitCreate)),
+          FilledButton(onPressed: _submit,
+              child: Text(_isEdit ? l10n.submitEdit : l10n.submitCreate)),
         ],
       ),
     );
@@ -169,12 +211,15 @@ class _CreatePageState extends State<CreatePage> {
     );
   }
 
-  Widget _selectField(
+  /// 自绘下拉：与父输入框一致的白底灰线圆角边框；宽度小于父控件；
+  /// 弹出面板从控件小三角下方展开（白底灰线圆角，不撑满父宽度）。
+  Widget _appDropdown(
     String label,
-    List<DropdownMenuItem<String>> items,
+    List<MapEntry<String, String>> options,
     String value,
     ValueChanged<String> onChanged,
   ) {
+    const width = 150.0;
     return Padding(
       padding: const EdgeInsets.only(bottom: 14),
       child: Column(
@@ -184,27 +229,25 @@ class _CreatePageState extends State<CreatePage> {
             padding: const EdgeInsets.only(left: 2, bottom: 6),
             child: Text(label, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
           ),
-          DropdownButtonFormField<String>(
-            initialValue: value,
-            isExpanded: true,
-            items: items,
-            onChanged: (v) => onChanged(v!),
-            icon: const Icon(Icons.arrow_drop_down, color: AppColors.mut),
-            decoration: InputDecoration(
-              filled: true,
-              fillColor: AppColors.card,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-              border: OutlineInputBorder(
+          GestureDetector(
+            onTap: () => _openMenu(context, options, value, width, onChanged),
+            child: Container(
+              width: width,
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+              decoration: BoxDecoration(
+                color: AppColors.card,
                 borderRadius: BorderRadius.circular(8),
-                borderSide: const BorderSide(color: AppColors.line),
+                border: Border.all(color: AppColors.line),
               ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: const BorderSide(color: AppColors.line),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: const BorderSide(color: AppColors.acc, width: 1.5),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(value,
+                        style: const TextStyle(fontSize: 14, color: AppColors.ink),
+                        overflow: TextOverflow.ellipsis),
+                  ),
+                  const Icon(Icons.arrow_drop_down, color: AppColors.mut),
+                ],
               ),
             ),
           ),
@@ -213,14 +256,52 @@ class _CreatePageState extends State<CreatePage> {
     );
   }
 
+  Future<void> _openMenu(
+    BuildContext context,
+    List<MapEntry<String, String>> options,
+    String value,
+    double width,
+    ValueChanged<String> onChanged,
+  ) async {
+    final box = context.findRenderObject() as RenderBox;
+    final pos = box.localToGlobal(Offset.zero);
+    final overlay = Navigator.of(context).overlay!.context.findRenderObject() as RenderBox;
+    final tl = overlay.globalToLocal(pos);
+    final rel = RelativeRect.fromLTRB(
+      tl.dx,
+      tl.dy + box.size.height,
+      tl.dx + width,
+      tl.dy + box.size.height + 320,
+    );
+    final sel = await showMenu<String>(
+      context: context,
+      position: rel,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+        side: const BorderSide(color: AppColors.line),
+      ),
+      items: [
+        for (final o in options)
+          PopupMenuItem<String>(
+            value: o.key,
+            child: SizedBox(
+              width: width - 32,
+              child: Text(o.value, overflow: TextOverflow.ellipsis),
+            ),
+          ),
+      ],
+    );
+    if (sel != null && sel != value) onChanged(sel);
+  }
+
   Widget _methodField(AppLocalizations l10n) {
-    return _selectField(
+    return _appDropdown(
       l10n.fieldMethod,
       [
-        DropdownMenuItem(value: '运动', child: Text(l10n.methodSport)),
-        DropdownMenuItem(value: '学习', child: Text(l10n.methodStudy)),
-        DropdownMenuItem(value: '任务', child: Text(l10n.methodTask)),
-        DropdownMenuItem(value: '其他', child: Text(l10n.methodOther)),
+        const MapEntry('运动', '运动'),
+        const MapEntry('学习', '学习'),
+        const MapEntry('任务', '任务'),
+        const MapEntry('其他', '其他'),
       ],
       _method,
       (v) => setState(() => _method = v),
@@ -228,11 +309,11 @@ class _CreatePageState extends State<CreatePage> {
   }
 
   Widget _failField(AppLocalizations l10n) {
-    return _selectField(
+    return _appDropdown(
       l10n.fieldFailRule,
       [
-        DropdownMenuItem(value: '停留', child: Text(l10n.failStay)),
-        DropdownMenuItem(value: '回退', child: Text(l10n.failRecede)),
+        const MapEntry('停留', '停留'),
+        const MapEntry('回退', '回退'),
       ],
       _failRule,
       (v) => setState(() => _failRule = v),

@@ -31,6 +31,19 @@ class _ExecutePageState extends State<ExecutePage> {
 
   int get _done => _checked.where((e) => e).length;
 
+  /// 依次从上往下勾选：只能勾选上一项已完成后的下一项；
+  /// 取消时只允许取消最后勾选的那一项，保证顺序不被打破。
+  void _toggle(int i) {
+    setState(() {
+      if (_checked[i]) {
+        final isLastChecked = i == _seq.length - 1 || !_checked.skip(i + 1).any((e) => e);
+        if (isLastChecked) _checked[i] = false;
+      } else {
+        if (i == 0 || _checked[i - 1]) _checked[i] = true;
+      }
+    });
+  }
+
   Future<void> _confirmDone() async {
     final l10n = AppLocalizations.of(context)!;
     final repo = AppScope.of(context).repository;
@@ -133,7 +146,8 @@ class _ExecutePageState extends State<ExecutePage> {
               value: _seq[i],
               index: i,
               checked: _checked[i],
-              onTap: () => setState(() => _checked[i] = !_checked[i]),
+              locked: !_checked[i] && i > 0 && !_checked[i - 1],
+              onTap: () => _toggle(i),
             ),
           const SizedBox(height: 8),
           FilledButton(
@@ -152,27 +166,37 @@ class _CheckItem extends StatelessWidget {
   final int value;
   final int index;
   final bool checked;
+  final bool locked;
   final VoidCallback onTap;
   const _CheckItem({
     required this.value,
     required this.index,
     required this.checked,
+    required this.locked,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final bg = checked
+        ? AppColors.okSoft
+        : (locked ? AppColors.dim : AppColors.card);
+    final border = checked ? AppColors.okSoft : (locked ? AppColors.dim : AppColors.line);
+    final boxColor = checked
+        ? AppColors.ok
+        : (locked ? AppColors.mut : AppColors.card);
+    final boxBorder = checked ? AppColors.ok : (locked ? AppColors.mut : AppColors.line);
     return InkWell(
-      onTap: onTap,
+      onTap: locked ? null : onTap,
       borderRadius: BorderRadius.circular(12),
       child: Container(
         margin: const EdgeInsets.only(bottom: 10),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
-          color: checked ? AppColors.okSoft : AppColors.card,
+          color: bg,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: checked ? AppColors.okSoft : AppColors.line),
+          border: Border.all(color: border),
         ),
         child: Row(
           children: [
@@ -181,10 +205,9 @@ class _CheckItem extends StatelessWidget {
               width: 24,
               height: 24,
               decoration: BoxDecoration(
-                color: checked ? AppColors.ok : AppColors.card,
+                color: boxColor,
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(
-                    color: checked ? AppColors.ok : AppColors.line, width: 2),
+                border: Border.all(color: boxBorder, width: 2),
               ),
               child: checked
                   ? const Icon(Icons.check, size: 15, color: Colors.white)

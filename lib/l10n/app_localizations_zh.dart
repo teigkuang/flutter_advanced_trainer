@@ -37,7 +37,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get statusWait => '待开始';
 
   @override
-  String get createTitle => '新建训练任务';
+  String get createTitle => '新建任务';
+
+  @override
+  String get editTitle => '编辑任务';
 
   @override
   String get fieldName => '训练项名称 *';
@@ -55,7 +58,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get fieldBeginGrade => '起始阶数 *';
 
   @override
-  String get fieldMethod => '训练方式';
+  String get fieldMethod => '任务类型';
 
   @override
   String get fieldGoal => '具体实施目标';
@@ -82,8 +85,16 @@ class AppLocalizationsZh extends AppLocalizations {
   String get submitCreate => '提交 · 创建任务';
 
   @override
+  String get submitEdit => '提交 · 保存任务';
+
+  @override
   String toastCreated(String name) {
     return '已创建「$name」';
+  }
+
+  @override
+  String toastSaved(String name) {
+    return '已保存「$name」';
   }
 
   @override
@@ -116,8 +127,11 @@ class AppLocalizationsZh extends AppLocalizations {
   String get taskNotFound => '任务不存在';
 
   @override
+  String get pendingExec => '待执行';
+
+  @override
   String methodLabel(String method) {
-    return '训练方式：$method';
+    return '任务类型：$method';
   }
 
   @override
@@ -192,5 +206,48 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String repPos(int n) {
     return '第$n次';
+  }
+
+  @override
+  String get manageTitle => '任务管理';
+
+  @override
+  String get manageEdit => '编辑任务';
+
+  @override
+  String get manageDelete => '删除任务';
+
+  @override
+  String get manageLogs => '查看相关记录';
+
+  @override
+  String get deleteTitle => '确认删除该任务？';
+
+  @override
+  String get deleteWarn => '删除后不可恢复，将一并删除该任务的进度与全部完成记录。';
+
+  @override
+  String get deleteCancel => '取消';
+
+  @override
+  String get deleteConfirm => '确认删除';
+
+  @override
+  String toastDeleted(String name) {
+    return '已删除「$name」及其全部记录';
+  }
+
+  @override
+  String get logsTitle => '相关记录';
+
+  @override
+  String get logsEmpty => '暂无完成记录';
+
+  @override
+  String get logsEmptyHint => '完成一次任务后，这里会记录完成时间和完成位置';
+
+  @override
+  String recordLine(String when, String pos) {
+    return '$when · 完成了 $pos';
   }
 }

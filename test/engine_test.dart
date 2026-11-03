@@ -58,6 +58,32 @@ void main() {
     });
   });
 
+  group('已取得成绩 achievedPosition（低于当前进行中的下一级别）', () {
+    final item = _defaultItem();
+
+    test('起点 (0,0,0) → null（待开始）', () {
+      expect(ProgressEngine.achievedPosition(item, const ProgressState(0, 0, 0)), isNull);
+    });
+
+    test('起点阶首级做了几次 (0,0,1) → 仍未取得任何阶/级', () {
+      expect(ProgressEngine.achievedPosition(item, const ProgressState(0, 0, 1)), isNull);
+    });
+
+    test('(2,1,0) 正进行第2级 → 已取得同阶第1级 (2,0)', () {
+      final a = ProgressEngine.achievedPosition(item, const ProgressState(2, 1, 0));
+      expect(a, isNotNull);
+      expect(a!.$1, 2);
+      expect(a.$2, 0);
+    });
+
+    test('(5,0,3) 正进行第1级 → 已取得上一阶末级 (4,2)', () {
+      final a = ProgressEngine.achievedPosition(item, const ProgressState(5, 0, 3));
+      expect(a, isNotNull);
+      expect(a!.$1, 4);
+      expect(a.$2, 2); // 第4阶末级
+    });
+  });
+
   group('推进 advance', () {
     final item = _defaultItem();
 

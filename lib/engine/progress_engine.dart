@@ -107,6 +107,21 @@ class ProgressEngine {
   static String position(TrainingItem item, ProgressState st) =>
       '${gradeTitle(st.grade)} · 第${st.level + 1}级 · 第${st.rep + 1}次';
 
+  /// 已取得成绩的阶/级（低于当前正在进行的下一级别；当前进行中尚未取得）。
+  /// 返回 (grade, level) 均为 0-based；尚未取得任何阶/级（待开始）时返回 null。
+  /// 语义：级内已推进（level>0）→ 同阶低一级；正处于某阶首级 → 上一阶末级；
+  ///       仍停在起点（beginGrade-1, 0）→ 尚未取得。
+  static (int, int)? achievedPosition(TrainingItem item, ProgressState st) {
+    if (st.level > 0) {
+      return (st.grade, st.level - 1);
+    }
+    if (st.grade > item.beginGrade - 1) {
+      final prev = st.grade - 1;
+      return (prev, levelCount(prev) - 1);
+    }
+    return null;
+  }
+
   /// 由当前进度推算"正在进行的那一次"的完整数据（纯计算，不写库）。
   static RepData currentRepData(TrainingItem item, ProgressState st) {
     return RepData(

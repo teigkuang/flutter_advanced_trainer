@@ -38,7 +38,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get statusWait => 'Not started';
 
   @override
-  String get createTitle => 'New Training Task';
+  String get createTitle => 'New Task';
+
+  @override
+  String get editTitle => 'Edit Task';
 
   @override
   String get fieldName => 'Training item name *';
@@ -56,7 +59,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get fieldBeginGrade => 'Start grade *';
 
   @override
-  String get fieldMethod => 'Training method';
+  String get fieldMethod => 'Task type';
 
   @override
   String get fieldGoal => 'Specific goal';
@@ -84,8 +87,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get submitCreate => 'Submit · Create task';
 
   @override
+  String get submitEdit => 'Submit · Save task';
+
+  @override
   String toastCreated(String name) {
     return 'Created \"$name\"';
+  }
+
+  @override
+  String toastSaved(String name) {
+    return 'Saved \"$name\"';
   }
 
   @override
@@ -118,8 +129,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get taskNotFound => 'Task not found';
 
   @override
+  String get pendingExec => 'To execute';
+
+  @override
   String methodLabel(String method) {
-    return 'Method: $method';
+    return 'Task type: $method';
   }
 
   @override
@@ -194,5 +208,50 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String repPos(int n) {
     return 'Rep $n';
+  }
+
+  @override
+  String get manageTitle => 'Manage Task';
+
+  @override
+  String get manageEdit => 'Edit Task';
+
+  @override
+  String get manageDelete => 'Delete Task';
+
+  @override
+  String get manageLogs => 'View Records';
+
+  @override
+  String get deleteTitle => 'Delete this task?';
+
+  @override
+  String get deleteWarn =>
+      'This cannot be undone. The task\'s progress and all its completion records will be deleted.';
+
+  @override
+  String get deleteCancel => 'Cancel';
+
+  @override
+  String get deleteConfirm => 'Delete';
+
+  @override
+  String toastDeleted(String name) {
+    return 'Deleted \"$name\" and all its records';
+  }
+
+  @override
+  String get logsTitle => 'Records';
+
+  @override
+  String get logsEmpty => 'No completed records yet';
+
+  @override
+  String get logsEmptyHint =>
+      'After finishing a session, the time and position will be recorded here';
+
+  @override
+  String recordLine(String when, String pos) {
+    return '$when · Completed $pos';
   }
 }

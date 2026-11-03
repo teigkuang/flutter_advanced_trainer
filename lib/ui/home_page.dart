@@ -8,6 +8,7 @@ import '../engine/progress_engine.dart';
 import 'app_scope.dart';
 import 'create_page.dart';
 import 'detail_page.dart';
+import 'manage_page.dart';
 import '../l10n/app_localizations.dart';
 import 'theme.dart';
 
@@ -36,13 +37,13 @@ class _HomePageState extends State<HomePage> {
     final cards = <_CardData>[];
     for (final it in items) {
       final pr = await repo.getProgress(it.id!) ?? ProgressEngine.initialState(it);
-      final started = !(pr.grade == it.beginGrade - 1 && pr.level == 0 && pr.rep == 0);
+      final ach = ProgressEngine.achievedPosition(it, pr);
       cards.add(_CardData(
         item: it,
         done: it.status == 'DONE',
-        wait: !started,
-        gradeText: started ? ProgressEngine.gradeTitle(pr.grade) : '',
-        levelText: started ? l10n.levelPos(pr.level + 1) : '',
+        wait: ach == null,
+        gradeText: ach == null ? '' : ProgressEngine.gradeTitle(ach.$1),
+        levelText: ach == null ? '' : l10n.levelPos(ach.$2 + 1),
       ));
     }
     if (!mounted) return;
@@ -61,6 +62,12 @@ class _HomePageState extends State<HomePage> {
   Future<void> _openDetail(int id) async {
     await Navigator.of(context)
         .push(MaterialPageRoute(builder: (_) => DetailPage(itemId: id)));
+    _load();
+  }
+
+  Future<void> _openManage(int id) async {
+    await Navigator.of(context)
+        .push(MaterialPageRoute(builder: (_) => ManagePage(itemId: id)));
     _load();
   }
 
@@ -111,6 +118,7 @@ class _HomePageState extends State<HomePage> {
           _TaskCard(
             data: c,
             onTap: () => _openDetail(c.item.id!),
+            onLongPress: () => _openManage(c.item.id!),
           ),
       ],
     );
@@ -135,13 +143,15 @@ class _CardData {
 class _TaskCard extends StatelessWidget {
   final _CardData data;
   final VoidCallback onTap;
-  const _TaskCard({required this.data, required this.onTap});
+  final VoidCallback onLongPress;
+  const _TaskCard({required this.data, required this.onTap, required this.onLongPress});
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return InkWell(
       onTap: onTap,
+      onLongPress: onLongPress,
       borderRadius: BorderRadius.circular(12),
       child: Container(
         margin: const EdgeInsets.only(bottom: 12),

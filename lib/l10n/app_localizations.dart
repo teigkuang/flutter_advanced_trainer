@@ -155,8 +155,14 @@ abstract class AppLocalizations {
   /// No description provided for @createTitle.
   ///
   /// In en, this message translates to:
-  /// **'New Training Task'**
+  /// **'New Task'**
   String get createTitle;
+
+  /// No description provided for @editTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Task'**
+  String get editTitle;
 
   /// No description provided for @fieldName.
   ///
@@ -191,7 +197,7 @@ abstract class AppLocalizations {
   /// No description provided for @fieldMethod.
   ///
   /// In en, this message translates to:
-  /// **'Training method'**
+  /// **'Task type'**
   String get fieldMethod;
 
   /// No description provided for @fieldGoal.
@@ -242,11 +248,23 @@ abstract class AppLocalizations {
   /// **'Submit · Create task'**
   String get submitCreate;
 
+  /// No description provided for @submitEdit.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit · Save task'**
+  String get submitEdit;
+
   /// No description provided for @toastCreated.
   ///
   /// In en, this message translates to:
   /// **'Created \"{name}\"'**
   String toastCreated(String name);
+
+  /// No description provided for @toastSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved \"{name}\"'**
+  String toastSaved(String name);
 
   /// No description provided for @methodSport.
   ///
@@ -302,10 +320,16 @@ abstract class AppLocalizations {
   /// **'Task not found'**
   String get taskNotFound;
 
+  /// No description provided for @pendingExec.
+  ///
+  /// In en, this message translates to:
+  /// **'To execute'**
+  String get pendingExec;
+
   /// No description provided for @methodLabel.
   ///
   /// In en, this message translates to:
-  /// **'Method: {method}'**
+  /// **'Task type: {method}'**
   String methodLabel(String method);
 
   /// No description provided for @goalHint.
@@ -415,6 +439,84 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Rep {n}'**
   String repPos(int n);
+
+  /// No description provided for @manageTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage Task'**
+  String get manageTitle;
+
+  /// No description provided for @manageEdit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Task'**
+  String get manageEdit;
+
+  /// No description provided for @manageDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Task'**
+  String get manageDelete;
+
+  /// No description provided for @manageLogs.
+  ///
+  /// In en, this message translates to:
+  /// **'View Records'**
+  String get manageLogs;
+
+  /// No description provided for @deleteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this task?'**
+  String get deleteTitle;
+
+  /// No description provided for @deleteWarn.
+  ///
+  /// In en, this message translates to:
+  /// **'This cannot be undone. The task\'s progress and all its completion records will be deleted.'**
+  String get deleteWarn;
+
+  /// No description provided for @deleteCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get deleteCancel;
+
+  /// No description provided for @deleteConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get deleteConfirm;
+
+  /// No description provided for @toastDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Deleted \"{name}\" and all its records'**
+  String toastDeleted(String name);
+
+  /// No description provided for @logsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Records'**
+  String get logsTitle;
+
+  /// No description provided for @logsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No completed records yet'**
+  String get logsEmpty;
+
+  /// No description provided for @logsEmptyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'After finishing a session, the time and position will be recorded here'**
+  String get logsEmptyHint;
+
+  /// No description provided for @recordLine.
+  ///
+  /// In en, this message translates to:
+  /// **'{when} · Completed {pos}'**
+  String recordLine(String when, String pos);
 }
 
 class _AppLocalizationsDelegate

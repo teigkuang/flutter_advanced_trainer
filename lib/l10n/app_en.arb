@@ -10,13 +10,14 @@
   "statusActive": "In progress",
   "statusWait": "Not started",
 
-  "createTitle": "New Training Task",
+  "createTitle": "New Task",
+  "editTitle": "Edit Task",
   "fieldName": "Training item name *",
   "fieldGrade": "Grade *",
   "fieldBeginNum": "Start number *",
   "fieldPlus": "Increment *",
   "fieldBeginGrade": "Start grade *",
-  "fieldMethod": "Training method",
+  "fieldMethod": "Task type",
   "fieldGoal": "Specific goal",
   "fieldFailRule": "On failure",
   "hintName": "e.g. Bench press",
@@ -25,8 +26,15 @@
   "errNameExists": "This name already exists",
   "errInvalidParams": "Enter valid numbers: grade≥1, start number/start grade≥0, increment≥1",
   "submitCreate": "Submit · Create task",
+  "submitEdit": "Submit · Save task",
   "toastCreated": "Created \"{name}\"",
   "@toastCreated": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "toastSaved": "Saved \"{name}\"",
+  "@toastSaved": {
     "placeholders": {
       "name": { "type": "String" }
     }
@@ -48,7 +56,8 @@
 
   "detailTitle": "Task Detail",
   "taskNotFound": "Task not found",
-  "methodLabel": "Method: {method}",
+  "pendingExec": "To execute",
+  "methodLabel": "Task type: {method}",
   "@methodLabel": {
     "placeholders": {
       "method": { "type": "String" }
@@ -124,6 +133,32 @@
   "@repPos": {
     "placeholders": {
       "n": { "type": "int" }
+    }
+  },
+
+  "manageTitle": "Manage Task",
+  "manageEdit": "Edit Task",
+  "manageDelete": "Delete Task",
+  "manageLogs": "View Records",
+  "deleteTitle": "Delete this task?",
+  "deleteWarn": "This cannot be undone. The task's progress and all its completion records will be deleted.",
+  "deleteCancel": "Cancel",
+  "deleteConfirm": "Delete",
+  "toastDeleted": "Deleted \"{name}\" and all its records",
+  "@toastDeleted": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+
+  "logsTitle": "Records",
+  "logsEmpty": "No completed records yet",
+  "logsEmptyHint": "After finishing a session, the time and position will be recorded here",
+  "recordLine": "{when} · Completed {pos}",
+  "@recordLine": {
+    "placeholders": {
+      "when": { "type": "String" },
+      "pos": { "type": "String" }
     }
   }
 }

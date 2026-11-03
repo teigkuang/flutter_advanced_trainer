@@ -83,7 +83,7 @@ class _DetailPageState extends State<DetailPage> {
               child: Text(item.name,
                   style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
             ),
-            _Pill(done: done),
+            if (done) _Pill(done: done),
           ],
         ),
         const SizedBox(height: 14),
@@ -97,6 +97,11 @@ class _DetailPageState extends State<DetailPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              if (!done) ...[
+                Text(l10n.pendingExec,
+                    style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.acc)),
+                const SizedBox(height: 4),
+              ],
               Text.rich(TextSpan(children: [
                 TextSpan(text: title.split(' · ').take(1).join()),
                 const TextSpan(text: ' · ', style: TextStyle(color: AppColors.acc)),

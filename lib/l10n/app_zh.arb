@@ -10,13 +10,14 @@
   "statusActive": "训练中",
   "statusWait": "待开始",
 
-  "createTitle": "新建训练任务",
+  "createTitle": "新建任务",
+  "editTitle": "编辑任务",
   "fieldName": "训练项名称 *",
   "fieldGrade": "阶数 *",
   "fieldBeginNum": "起始数 *",
   "fieldPlus": "增加量 *",
   "fieldBeginGrade": "起始阶数 *",
-  "fieldMethod": "训练方式",
+  "fieldMethod": "任务类型",
   "fieldGoal": "具体实施目标",
   "fieldFailRule": "未完成规则",
   "hintName": "如：胸肌卧推",
@@ -25,8 +26,15 @@
   "errNameExists": "名称已存在",
   "errInvalidParams": "请填写合法数值：阶数≥1，起始数/起始阶数≥0，增加量≥1",
   "submitCreate": "提交 · 创建任务",
+  "submitEdit": "提交 · 保存任务",
   "toastCreated": "已创建「{name}」",
   "@toastCreated": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "toastSaved": "已保存「{name}」",
+  "@toastSaved": {
     "placeholders": {
       "name": { "type": "String" }
     }
@@ -48,7 +56,8 @@
 
   "detailTitle": "任务详情",
   "taskNotFound": "任务不存在",
-  "methodLabel": "训练方式：{method}",
+  "pendingExec": "待执行",
+  "methodLabel": "任务类型：{method}",
   "@methodLabel": {
     "placeholders": {
       "method": { "type": "String" }
@@ -124,6 +133,32 @@
   "@repPos": {
     "placeholders": {
       "n": { "type": "int" }
+    }
+  },
+
+  "manageTitle": "任务管理",
+  "manageEdit": "编辑任务",
+  "manageDelete": "删除任务",
+  "manageLogs": "查看相关记录",
+  "deleteTitle": "确认删除该任务？",
+  "deleteWarn": "删除后不可恢复，将一并删除该任务的进度与全部完成记录。",
+  "deleteCancel": "取消",
+  "deleteConfirm": "确认删除",
+  "toastDeleted": "已删除「{name}」及其全部记录",
+  "@toastDeleted": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+
+  "logsTitle": "相关记录",
+  "logsEmpty": "暂无完成记录",
+  "logsEmptyHint": "完成一次任务后，这里会记录完成时间和完成位置",
+  "recordLine": "{when} · 完成了 {pos}",
+  "@recordLine": {
+    "placeholders": {
+      "when": { "type": "String" },
+      "pos": { "type": "String" }
     }
   }
 }

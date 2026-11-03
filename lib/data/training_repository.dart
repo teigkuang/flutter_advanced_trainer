@@ -13,6 +13,8 @@ abstract class TrainingRepository {
   Future<List<TrainingItem>> listItems();
   Future<TrainingItem?> getItem(int id);
   Future<int> createItem(TrainingItem item);
+  Future<void> updateItem(TrainingItem item);
+  Future<void> deleteItem(int id); // 级联删除：任务 + 进度 + 全部完成记录（单个事务）
   Future<ProgressState?> getProgress(int itemId);
   Future<void> saveProgress(int itemId, ProgressState st);
   Future<void> updateItemStatus(int id, String status);
@@ -53,6 +55,33 @@ class SqliteTrainingRepository implements TrainingRepository {
     });
     item.id = id;
     return id;
+  }
+
+  @override
+  Future<void> updateItem(TrainingItem item) async {
+    final db = await AppDatabase.instance;
+    await db.update('training_item', {
+      'name': item.name,
+      'training_method': item.trainingMethod,
+      'goal_text': item.goalText,
+      'metric_unit': item.metricUnit,
+      'begin_num': item.beginNum,
+      'plus_var': item.plusVar,
+      'd_grade': item.dGrade,
+      'begin_grade': item.beginGrade,
+      'fail_rule': item.failRule,
+      'status': item.status,
+    }, where: 'id = ?', whereArgs: [item.id]);
+  }
+
+  @override
+  Future<void> deleteItem(int id) async {
+    final db = await AppDatabase.instance;
+    await db.transaction((txn) async {
+      await txn.delete('completion_log', where: 'item_id = ?', whereArgs: [id]);
+      await txn.delete('progress', where: 'item_id = ?', whereArgs: [id]);
+      await txn.delete('training_item', where: 'id = ?', whereArgs: [id]);
+    });
   }
 
   @override
