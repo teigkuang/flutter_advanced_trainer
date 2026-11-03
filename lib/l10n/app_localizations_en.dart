@@ -107,8 +107,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get failRecede => 'Recede';
 
   @override
-  String achievedCount(int n) {
-    return 'Completed $n reps';
+  String achievedText(String grade, String level) {
+    return 'Completed $grade · $level';
   }
 
   @override
@@ -161,6 +161,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String itemIndex(int index) {
     return 'Item $index';
   }
+
+  @override
+  String get refLabel => 'Ref';
 
   @override
   String get toastDoneFinish => 'All done — training complete';

@@ -30,17 +30,19 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> _load() async {
     setState(() => _loading = true);
+    final l10n = AppLocalizations.of(context)!;
     final repo = AppScope.of(context).repository;
     final items = await repo.listItems();
     final cards = <_CardData>[];
     for (final it in items) {
       final pr = await repo.getProgress(it.id!) ?? ProgressEngine.initialState(it);
-      final total = ProgressEngine.totalCompleted(it, pr);
+      final started = !(pr.grade == it.beginGrade - 1 && pr.level == 0 && pr.rep == 0);
       cards.add(_CardData(
         item: it,
         done: it.status == 'DONE',
-        wait: total == 0 && it.status != 'DONE',
-        achieved: total,
+        wait: !started,
+        gradeText: started ? ProgressEngine.gradeTitle(pr.grade) : '',
+        levelText: started ? l10n.levelPos(pr.level + 1) : '',
       ));
     }
     if (!mounted) return;
@@ -119,12 +121,14 @@ class _CardData {
   final TrainingItem item;
   final bool done;
   final bool wait;
-  final int achieved;
+  final String gradeText;
+  final String levelText;
   const _CardData({
     required this.item,
     required this.done,
     required this.wait,
-    required this.achieved,
+    required this.gradeText,
+    required this.levelText,
   });
 }
 
@@ -161,7 +165,9 @@ class _TaskCard extends StatelessWidget {
             ),
             const SizedBox(height: 7),
             Text(
-              data.wait ? l10n.statusWait : l10n.achievedCount(data.achieved),
+              data.wait
+                  ? l10n.statusWait
+                  : l10n.achievedText(data.gradeText, data.levelText),
               style: const TextStyle(fontSize: 12, color: AppColors.mut),
             ),
           ],

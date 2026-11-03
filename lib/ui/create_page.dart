@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import '../engine/models.dart';
 import '../engine/progress_engine.dart';
 import 'app_scope.dart';
+import 'theme.dart';
 import '../l10n/app_localizations.dart';
 
 class CreatePage extends StatefulWidget {
@@ -168,7 +169,12 @@ class _CreatePageState extends State<CreatePage> {
     );
   }
 
-  Widget _methodField(AppLocalizations l10n) {
+  Widget _selectField(
+    String label,
+    List<DropdownMenuItem<String>> items,
+    String value,
+    ValueChanged<String> onChanged,
+  ) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 14),
       child: Column(
@@ -176,45 +182,60 @@ class _CreatePageState extends State<CreatePage> {
         children: [
           Padding(
             padding: const EdgeInsets.only(left: 2, bottom: 6),
-            child: Text(l10n.fieldMethod, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
+            child: Text(label, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
           ),
           DropdownButtonFormField<String>(
-            initialValue: _method,
-            items: [
-              DropdownMenuItem(value: '运动', child: Text(l10n.methodSport)),
-              DropdownMenuItem(value: '学习', child: Text(l10n.methodStudy)),
-              DropdownMenuItem(value: '任务', child: Text(l10n.methodTask)),
-              DropdownMenuItem(value: '其他', child: Text(l10n.methodOther)),
-            ],
-            onChanged: (v) => setState(() => _method = v!),
-            decoration: const InputDecoration(),
+            initialValue: value,
+            isExpanded: true,
+            items: items,
+            onChanged: (v) => onChanged(v!),
+            icon: const Icon(Icons.arrow_drop_down, color: AppColors.mut),
+            decoration: InputDecoration(
+              filled: true,
+              fillColor: AppColors.card,
+              contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: const BorderSide(color: AppColors.line),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: const BorderSide(color: AppColors.line),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: const BorderSide(color: AppColors.acc, width: 1.5),
+              ),
+            ),
           ),
         ],
       ),
     );
   }
 
+  Widget _methodField(AppLocalizations l10n) {
+    return _selectField(
+      l10n.fieldMethod,
+      [
+        DropdownMenuItem(value: '运动', child: Text(l10n.methodSport)),
+        DropdownMenuItem(value: '学习', child: Text(l10n.methodStudy)),
+        DropdownMenuItem(value: '任务', child: Text(l10n.methodTask)),
+        DropdownMenuItem(value: '其他', child: Text(l10n.methodOther)),
+      ],
+      _method,
+      (v) => setState(() => _method = v),
+    );
+  }
+
   Widget _failField(AppLocalizations l10n) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 14),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(left: 2, bottom: 6),
-            child: Text(l10n.fieldFailRule, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
-          ),
-          DropdownButtonFormField<String>(
-            initialValue: _failRule,
-            items: [
-              DropdownMenuItem(value: '停留', child: Text(l10n.failStay)),
-              DropdownMenuItem(value: '回退', child: Text(l10n.failRecede)),
-            ],
-            onChanged: (v) => setState(() => _failRule = v!),
-            decoration: const InputDecoration(),
-          ),
-        ],
-      ),
+    return _selectField(
+      l10n.fieldFailRule,
+      [
+        DropdownMenuItem(value: '停留', child: Text(l10n.failStay)),
+        DropdownMenuItem(value: '回退', child: Text(l10n.failRecede)),
+      ],
+      _failRule,
+      (v) => setState(() => _failRule = v),
     );
   }
 }

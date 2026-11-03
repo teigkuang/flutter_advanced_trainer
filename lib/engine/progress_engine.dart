@@ -107,18 +107,6 @@ class ProgressEngine {
   static String position(TrainingItem item, ProgressState st) =>
       '${gradeTitle(st.grade)} · 第${st.level + 1}级 · 第${st.rep + 1}次';
 
-  /// 从起点累计已完成的次数（首页卡片"已完成 N 次"）。
-  ///  = Σ(起点阶..当前阶-1 每阶全级次数) + 当前级已完成次数 + 当前次已完成次数。
-  /// 起点为 initialState（beginGrade-1, 0, 0）；未完成过任何一次时为 0。
-  static int totalCompleted(TrainingItem item, ProgressState st) {
-    int total = 0;
-    for (int g = item.beginGrade - 1; g < st.grade; g++) {
-      total += levelCount(g) * repCount(g);
-    }
-    total += st.level * repCount(st.grade) + st.rep;
-    return total;
-  }
-
   /// 由当前进度推算"正在进行的那一次"的完整数据（纯计算，不写库）。
   static RepData currentRepData(TrainingItem item, ProgressState st) {
     return RepData(

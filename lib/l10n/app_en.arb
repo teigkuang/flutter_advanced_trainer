@@ -38,10 +38,11 @@
   "methodOther": "Other",
   "failStay": "Stay",
   "failRecede": "Recede",
-  "achievedCount": "Completed {n} reps",
-  "@achievedCount": {
+  "achievedText": "Completed {grade} · {level}",
+  "@achievedText": {
     "placeholders": {
-      "n": { "type": "int" }
+      "grade": { "type": "String" },
+      "level": { "type": "String" }
     }
   },
 
@@ -91,6 +92,7 @@
       "index": { "type": "int" }
     }
   },
+  "refLabel": "Ref",
   "toastDoneFinish": "All done — training complete",
   "toastAdvance": "Completed and advanced",
   "toastFail": "Marked incomplete · {rule}",

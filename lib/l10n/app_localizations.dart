@@ -284,11 +284,11 @@ abstract class AppLocalizations {
   /// **'Recede'**
   String get failRecede;
 
-  /// No description provided for @achievedCount.
+  /// No description provided for @achievedText.
   ///
   /// In en, this message translates to:
-  /// **'Completed {n} reps'**
-  String achievedCount(int n);
+  /// **'Completed {grade} · {level}'**
+  String achievedText(String grade, String level);
 
   /// No description provided for @detailTitle.
   ///
@@ -367,6 +367,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Item {index}'**
   String itemIndex(int index);
+
+  /// No description provided for @refLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Ref'**
+  String get refLabel;
 
   /// No description provided for @toastDoneFinish.
   ///

@@ -105,8 +105,8 @@ class AppLocalizationsZh extends AppLocalizations {
   String get failRecede => '回退';
 
   @override
-  String achievedCount(int n) {
-    return '已完成 $n 次';
+  String achievedText(String grade, String level) {
+    return '已完成 $grade・$level';
   }
 
   @override
@@ -159,6 +159,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String itemIndex(int index) {
     return '第 $index 项';
   }
+
+  @override
+  String get refLabel => '参考量';
 
   @override
   String get toastDoneFinish => '全部完成，已收官';

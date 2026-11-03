@@ -38,10 +38,11 @@
   "methodOther": "其他",
   "failStay": "停留",
   "failRecede": "回退",
-  "achievedCount": "已完成 {n} 次",
-  "@achievedCount": {
+  "achievedText": "已完成 {grade}・{level}",
+  "@achievedText": {
     "placeholders": {
-      "n": { "type": "int" }
+      "grade": { "type": "String" },
+      "level": { "type": "String" }
     }
   },
 
@@ -91,6 +92,7 @@
       "index": { "type": "int" }
     }
   },
+  "refLabel": "参考量",
   "toastDoneFinish": "全部完成，已收官",
   "toastAdvance": "已完成并晋级",
   "toastFail": "已标记未完成 · {rule}",

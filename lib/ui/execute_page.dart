@@ -162,6 +162,7 @@ class _CheckItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(12),
@@ -190,14 +191,15 @@ class _CheckItem extends StatelessWidget {
                   : null,
             ),
             const SizedBox(width: 14),
-            Text('($value)',
-                style: const TextStyle(
-                    fontFamily: 'monospace',
-                    fontSize: 17,
-                    fontWeight: FontWeight.w600)),
+            Text(l10n.itemIndex(index + 1),
+                style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: AppColors.mut)),
             const Spacer(),
-            Text(AppLocalizations.of(context)!.itemIndex(index + 1),
-                style: const TextStyle(fontSize: 12, color: AppColors.mut)),
+            Text.rich(TextSpan(children: [
+              TextSpan(text: '${l10n.refLabel} ',
+                  style: const TextStyle(fontSize: 12, color: AppColors.mut)),
+              TextSpan(text: '$value',
+                  style: const TextStyle(fontFamily: 'monospace', fontSize: 17, fontWeight: FontWeight.w600)),
+            ])),
           ],
         ),
       ),
