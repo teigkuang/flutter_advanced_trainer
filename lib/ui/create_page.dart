@@ -274,7 +274,11 @@ class _CreatePageState extends State<CreatePage> {
     final screenW = MediaQuery.of(context).size.width;
     // 面板宽：略窄于编辑框（紧贴其下、留少量空隙），并在窄屏时自适应避免越界
     final panelW = (size.width - 12).clamp(120.0, 240.0);
-    final left = (tl.dx + panelW > screenW - 16) ? (screenW - panelW - 16) : tl.dx;
+    // 面板右缘对齐编辑框右侧小三角，向下紧贴编辑框弹出
+    final rightEdge = tl.dx + size.width;
+    var left = rightEdge - panelW;
+    if (left < 12) left = 12;
+    if (left + panelW > screenW - 12) left = screenW - 12 - panelW;
     final rel = RelativeRect.fromLTRB(
       left,
       tl.dy + size.height, // 紧贴编辑框底部
