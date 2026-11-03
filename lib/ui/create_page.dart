@@ -228,12 +228,11 @@ class _CreatePageState extends State<CreatePage> {
             padding: const EdgeInsets.only(left: 2, bottom: 6),
             child: Text(label, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
           ),
-          Theme(
-            data: Theme.of(context).copyWith(
-              popupMenuTheme: const PopupMenuThemeData(color: Colors.white),
-            ),
-            child: GestureDetector(
-              onTap: () => _openMenu(context, options, value, onChanged),
+          // Builder 提供编辑框自身的 BuildContext，_openMenu 用它取 RenderBox 定位，
+          // 使弹窗紧贴本编辑框正下方（而非页面级坐标）
+          Builder(
+            builder: (menuCtx) => GestureDetector(
+              onTap: () => _openMenu(menuCtx, options, value, onChanged),
               child: Container(
                 width: double.infinity, // 与父输入框同宽
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
@@ -266,14 +265,15 @@ class _CreatePageState extends State<CreatePage> {
     String value,
     ValueChanged<String> onChanged,
   ) async {
+    // context 为编辑框自身（Builder 传入），取其 RenderBox 定位
     final box = context.findRenderObject() as RenderBox;
     final size = box.size;
     final pos = box.localToGlobal(Offset.zero);
     final overlay = Navigator.of(context).overlay!.context.findRenderObject() as RenderBox;
     final tl = overlay.globalToLocal(pos);
     final screenW = MediaQuery.of(context).size.width;
-    // 弹窗面板宽：窄于编辑框（编辑框约撑满列宽），并在窄屏时自适应避免越界
-    final panelW = size.width < 150 ? size.width - 12 : 150.0;
+    // 面板宽：略窄于编辑框（紧贴其下、留少量空隙），并在窄屏时自适应避免越界
+    final panelW = (size.width - 12).clamp(120.0, 240.0);
     final left = (tl.dx + panelW > screenW - 16) ? (screenW - panelW - 16) : tl.dx;
     final rel = RelativeRect.fromLTRB(
       left,

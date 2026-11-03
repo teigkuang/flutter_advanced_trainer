@@ -31,6 +31,7 @@ ThemeData buildTheme() {
     fontFamily: _fontFamily,
   );
   return base.copyWith(
+    popupMenuTheme: const PopupMenuThemeData(color: Colors.white),
     appBarTheme: const AppBarTheme(
       backgroundColor: AppColors.ink,
       foregroundColor: Colors.white,
