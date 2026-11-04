@@ -256,6 +256,15 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get metronomeBpmHint => 'Tap the number to enter BPM (40–208)';
+
+  @override
+  String get commonConfirm => 'OK';
+
+  @override
+  String get commonCancel => 'Cancel';
+
+  @override
   String get checklistTitle => 'Checklist';
 
   @override

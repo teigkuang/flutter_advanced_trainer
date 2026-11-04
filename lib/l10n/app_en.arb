@@ -142,6 +142,9 @@
       "ref": { "type": "int" }
     }
   },
+  "metronomeBpmHint": "Tap the number to enter BPM (40\u2013208)",
+  "commonConfirm": "OK",
+  "commonCancel": "Cancel",
 
   "checklistTitle": "Checklist",
   "checklistMissing": "List file missing, please re-upload",

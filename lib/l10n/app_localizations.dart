@@ -536,6 +536,24 @@ abstract class AppLocalizations {
   /// **'This item ref: {ref}'**
   String metronomeItem(int ref);
 
+  /// No description provided for @metronomeBpmHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap the number to enter BPM (40–208)'**
+  String get metronomeBpmHint;
+
+  /// No description provided for @commonConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'OK'**
+  String get commonConfirm;
+
+  /// No description provided for @commonCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get commonCancel;
+
   /// No description provided for @checklistTitle.
   ///
   /// In en, this message translates to:

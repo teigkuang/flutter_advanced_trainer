@@ -253,6 +253,15 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
+  String get metronomeBpmHint => '点击数字可直接输入 BPM（40~208）';
+
+  @override
+  String get commonConfirm => '确定';
+
+  @override
+  String get commonCancel => '取消';
+
+  @override
   String get checklistTitle => '清单';
 
   @override

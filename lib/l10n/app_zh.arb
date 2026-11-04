@@ -142,6 +142,9 @@
       "ref": { "type": "int" }
     }
   },
+  "metronomeBpmHint": "点击数字可直接输入 BPM（40~208）",
+  "commonConfirm": "确定",
+  "commonCancel": "取消",
 
   "checklistTitle": "清单",
   "checklistMissing": "缺少清单文件，请重新上传",

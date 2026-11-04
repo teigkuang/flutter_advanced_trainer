@@ -8,6 +8,7 @@ import 'dart:async';
 
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../engine/models.dart';
 import '../l10n/app_localizations.dart';
@@ -86,6 +87,51 @@ class _MetronomePageState extends State<MetronomePage> {
     _restartTimer();
   }
 
+  /// 点击 BPM 数字弹出输入框，手动输入 40~208。
+  Future<void> _askBpm() async {
+    final l10n = AppLocalizations.of(context)!;
+    final ctrl = TextEditingController(text: '$_bpm');
+    int? parse(String t) {
+      final v = int.tryParse(t.trim());
+      if (v == null) return null;
+      return v.clamp(_minBpm, _maxBpm);
+    }
+
+    final result = await showDialog<int>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.metronomeBpm),
+        content: TextField(
+          controller: ctrl,
+          autofocus: true,
+          keyboardType: TextInputType.number,
+          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+          onSubmitted: (t) {
+            final v = parse(t);
+            if (v != null) Navigator.of(ctx).pop(v);
+          },
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: Text(l10n.commonCancel),
+          ),
+          TextButton(
+            onPressed: () {
+              final v = parse(ctrl.text);
+              if (v != null) Navigator.of(ctx).pop(v);
+            },
+            child: Text(l10n.commonConfirm),
+          ),
+        ],
+      ),
+    );
+    if (result != null && mounted) {
+      setState(() => _bpm = result);
+      _restartTimer();
+    }
+  }
+
   void _start() {
     setState(() => _state = 'run');
     _timer?.cancel();
@@ -135,22 +181,27 @@ class _MetronomePageState extends State<MetronomePage> {
                       onTap: _bpm <= _minBpm ? null : () => _adjust(-1),
                       color: AppColors.acc,
                     ),
-                    Container(
-                      width: 96,
-                      margin: const EdgeInsets.symmetric(horizontal: 20),
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        color: running ? AppColors.accSoft : AppColors.paper,
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: running ? AppColors.acc : AppColors.line),
+                    InkWell(
+                      onTap: _askBpm,
+                      borderRadius: BorderRadius.circular(8),
+                      child: Container(
+                        width: 96,
+                        margin: const EdgeInsets.symmetric(horizontal: 20),
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: running ? AppColors.accSoft : AppColors.paper,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                              color: running ? AppColors.acc : AppColors.line),
+                        ),
+                        child: Text('$_bpm',
+                            style: TextStyle(
+                                fontFamily: 'monospace',
+                                fontSize: 28,
+                                fontWeight: FontWeight.w700,
+                                color: running ? AppColors.acc : AppColors.ink)),
                       ),
-                      child: Text('$_bpm',
-                          style: TextStyle(
-                              fontFamily: 'monospace',
-                              fontSize: 28,
-                              fontWeight: FontWeight.w700,
-                              color: running ? AppColors.acc : AppColors.ink)),
                     ),
                     _IconBtn(
                       icon: Icons.add,
