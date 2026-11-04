@@ -117,4 +117,42 @@ void main() {
       expect(units.first.text, "It's been a while");
     });
   });
+
+  group('全角中文标点在拉丁段中被剔除（不被英文 TTS 读出）', () {
+    test('英文后跟全角句号 → 句号被剔除，英文段干净', () {
+      final segs = splitByLanguage('I am fine. 我很好。');
+      final enSeg = segs.firstWhere((s) => s.lang == TtsLang.en);
+      expect(enSeg.text.contains('。'), isFalse);
+      expect(enSeg.text.contains('.'), isTrue); // ASCII 句号保留
+      final zhSeg = segs.firstWhere((s) => s.lang == TtsLang.zh);
+      expect(zhSeg.text, contains('。')); // 中文段标点保留
+    });
+
+    test('英文词之间夹全角顿号/逗号 → 剔除并保留空格分隔', () {
+      final segs = splitByLanguage('apple、banana，orange');
+      // 全角顿号/逗号不应进入英文段
+      expect(segs.every((s) => !s.text.contains('、') && !s.text.contains('，')),
+          isTrue);
+      // 合并后英文仍是完整词序列，且不被粘连
+      final en = segs.map((s) => s.text).join(' ');
+      expect(en, contains('apple'));
+      expect(en, contains('banana'));
+      expect(en, contains('orange'));
+    });
+
+    test('英文后全角感叹号/问号被剔除', () {
+      final segs = splitByLanguage('Hello! 你好？');
+      final enSeg = segs.firstWhere((s) => s.lang == TtsLang.en);
+      expect(enSeg.text.trim(), 'Hello!'); // ASCII 感叹号保留
+      final zhSeg = segs.firstWhere((s) => s.lang == TtsLang.zh);
+      expect(zhSeg.text, contains('？'));
+    });
+
+    test('纯英文句末全角标点 → 英文段不含该标点', () {
+      final segs = splitByLanguage("It's been a while。");
+      expect(segs.length, 1);
+      expect(segs.first.lang, TtsLang.en);
+      expect(segs.first.text.contains('。'), isFalse);
+    });
+  });
 }

@@ -101,6 +101,27 @@ bool _bufEndsWithHan(StringBuffer buf) {
   return last >= 0x4E00 && last <= 0x9FFF;
 }
 
+/// 判断是否为「全角中文标点」（顿号、句号、逗号、问号、感叹号、分号、冒号等）。
+/// 这类标点在英文 TTS 里会被读出来（如「。」读出），故跟在拉丁语内容后时应剔除，
+/// 只并入中文/日文片段（对应 TTS 会正确停顿、不读出标点）。
+bool _isFullwidthCjkPunct(int r) {
+  // CJK 符号与标点区 U+3000–U+303F（、。〈〉「」『』【】～等）
+  if (r >= 0x3000 && r <= 0x303F) return true;
+  // 全角 ASCII 变体区 U+FF00–U+FFEF 中的常用标点：！＂＃＄％＆＇（）＊＋，－．／：；＜＝＞？＠［＼］＾＿｀｛｜｝～
+  // 只命中常用标点码位，避免把全角字母/数字误判为标点。
+  if ((r >= 0xFF01 && r <= 0xFF0F) || (r >= 0xFF1A && r <= 0xFF1F) ||
+      (r >= 0xFF5B && r <= 0xFF65)) {
+    return true;
+  }
+  // 中文弯引号（“ ” ‘ ’）
+  if (r == 0x201C || r == 0x201D || r == 0x2018 || r == 0x2019) return true;
+  return false;
+}
+
+/// 是否为拉丁语系语言（这些语言的 TTS 会读出全角中文标点，需剔除）。
+bool _isLatin(TtsLang l) => l == TtsLang.en || l == TtsLang.fr ||
+    l == TtsLang.es || l == TtsLang.de || l == TtsLang.ru;
+
 /// 简化拉丁词表识别：命中常见词 → 对应语言。
 TtsLang _latinWordLang(String word) {
   final w = word.toLowerCase();
@@ -172,8 +193,22 @@ List<LangSegment> splitByLanguage(String text) {
     }
     final lang = _scriptOfChar(ch);
     if (lang == null) {
-      // 中性字符（标点/数字/符号）：并入当前片段；若尚无语言片段则暂存。
-      buf.write(ch);
+      // 中性字符（标点/数字/符号）。
+      final r = ch.codeUnitAt(0);
+      if (_isFullwidthCjkPunct(r)) {
+        if (cur != null && _isLatin(cur!)) {
+          // 全角中文标点跟在拉丁语内容后：会被英文 TTS 读出，故剔除，
+          // 用一个空格替代以保持词间分隔，再结束当前拉丁段。
+          flush();
+          buf.write(' ');
+        } else {
+          // 中文/日文段内的标点：保留（对应 TTS 会正确停顿、不读出）。
+          buf.write(ch);
+        }
+      } else {
+        // 非中文标点的中性字符（数字、ASCII 标点、符号）：并入当前片段。
+        buf.write(ch);
+      }
       continue;
     }
     // 有明确语言字符。
