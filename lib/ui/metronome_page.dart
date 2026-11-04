@@ -1,13 +1,13 @@
 /// 运动实施子页 · 节拍器：BPM 40~208 可调，开始播放嘀嗒声，暂停停止，结束=完成当前项返回推进。
 ///
-/// 节拍声来源（实现层定）：`SystemSound.play(SystemSoundType.click)`，
-/// 由定时器按 60000/BPM 间隔触发，同时做一次视觉闪烁反馈。
+/// 节拍声来源（实现层定）：`audioplayers` 播放内置短促 beep（assets/audio/metronome.wav），
+/// 由定时器按 60000/BPM 间隔触发，同时做一个节拍指示点视觉反馈。
 library;
 
 import 'dart:async';
 
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 import '../engine/models.dart';
 import '../l10n/app_localizations.dart';
@@ -29,17 +29,44 @@ class _MetronomePageState extends State<MetronomePage> {
   int _bpm = 120;
   String _state = 'idle'; // idle / run / pause
   Timer? _timer;
-  int _beat = 0; // 已播的嘀嗒数（视觉反馈）
+  int _beat = 0; // 已播的嘀嗒数（仅用于节拍指示点闪烁，不显示数字）
+  AudioPlayer? _player;
+  bool _audioReady = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _initAudio();
+  }
 
   @override
   void dispose() {
     _timer?.cancel();
+    _player?.dispose();
     super.dispose();
   }
 
-  void _tick() {
-    SystemSound.play(SystemSoundType.click);
-    setState(() => _beat++);
+  Future<void> _initAudio() async {
+    try {
+      final p = AudioPlayer();
+      await p.setSource(AssetSource('audio/metronome.wav'));
+      await p.setReleaseMode(ReleaseMode.stop);
+      _player = p;
+      _audioReady = true;
+    } catch (_) {
+      // 音频初始化失败（无音频设备等）时静默降级，仅保留视觉节拍指示。
+    }
+  }
+
+  void _tick() async {
+    final p = _player;
+    if (_audioReady && p != null) {
+      try {
+        await p.stop();
+        await p.resume();
+      } catch (_) {}
+    }
+    if (mounted) setState(() => _beat++);
   }
 
   void _restartTimer() {
@@ -153,9 +180,16 @@ class _MetronomePageState extends State<MetronomePage> {
               children: [
                 Text(l10n.metronomeItem(widget.ref),
                     style: const TextStyle(fontSize: 13, color: Colors.white)),
-                const SizedBox(height: 8),
-                Text('$_beat',
-                    style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w700, color: Colors.white)),
+                const SizedBox(height: 10),
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 60),
+                  width: 14,
+                  height: 14,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: running && _beat.isOdd ? AppColors.acc : Colors.white24,
+                  ),
+                ),
               ],
             ),
           ),
@@ -164,8 +198,15 @@ class _MetronomePageState extends State<MetronomePage> {
             children: [
               Expanded(
                 child: FilledButton(
-                  onPressed: running ? _pause : _start,
-                  child: Text(running ? l10n.metronomePause : l10n.metronomeStart),
+                  onPressed: running ? null : _start,
+                  child: Text(l10n.metronomeStart),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: FilledButton.tonal(
+                  onPressed: running ? _pause : null,
+                  child: Text(l10n.metronomePause),
                 ),
               ),
             ],
