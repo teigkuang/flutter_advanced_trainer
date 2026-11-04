@@ -44,6 +44,10 @@
   "methodStudy": "Study",
   "methodTask": "Task",
   "methodOther": "Other",
+  "typeSport": "Sport",
+  "typeTask": "Tasks",
+  "typeStudy": "Study",
+  "typeRecord": "Record",
   "failStay": "Stay",
   "failRecede": "Recede",
   "achievedText": "Completed {grade} · {level}",
@@ -102,6 +106,7 @@
     }
   },
   "refLabel": "Ref",
+  "execEnter": "Execute",
   "toastDoneFinish": "All done — training complete",
   "toastAdvance": "Completed and advanced",
   "toastFail": "Marked incomplete · {rule}",
@@ -110,6 +115,74 @@
       "rule": { "type": "String" }
     }
   },
+
+  "fieldListFile": "List / study file",
+  "listPickHint": "Tap to choose a .md / .txt file",
+  "listFileHint": "Task/Study tasks need a list file, taken in a loop during execution",
+  "errListEmpty": "Selected file is empty",
+  "errListPick": "Failed to pick file",
+  "toastListUploaded": "List \"{name}\" uploaded",
+  "@toastListUploaded": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+
+  "metronomeTitle": "Metronome",
+  "metronomeBpm": "Tempo (BPM)",
+  "metronomeIdle": "Ready · tap start",
+  "metronomePaused": "Paused",
+  "metronomeRunning": "Running",
+  "metronomeStart": "Start",
+  "metronomePause": "Pause",
+  "metronomeEnd": "Finish",
+  "metronomeItem": "This item ref: {ref}",
+  "@metronomeItem": {
+    "placeholders": {
+      "ref": { "type": "int" }
+    }
+  },
+
+  "checklistTitle": "Checklist",
+  "checklistMissing": "List file missing, please re-upload",
+  "checklistLoop": "List: {file} · taken in loop, wrap around",
+  "@checklistLoop": {
+    "placeholders": {
+      "file": { "type": "String" }
+    }
+  },
+  "checklistFileLabel": "Unnamed list",
+  "checklistNeed": "Check {n} items",
+  "@checklistNeed": {
+    "placeholders": {
+      "n": { "type": "int" }
+    }
+  },
+  "checklistFinish": "All checked · Finish item",
+
+  "noteTitle": "Write a record",
+  "noteNeed": "Submit {n} entries",
+  "@noteNeed": {
+    "placeholders": {
+      "n": { "type": "int" }
+    }
+  },
+  "notePos": "Position: {pos}",
+  "@notePos": {
+    "placeholders": {
+      "pos": { "type": "String" }
+    }
+  },
+  "noteSubmitted": "Submitted {done} / {total}",
+  "@noteSubmitted": {
+    "placeholders": {
+      "done": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "noteHint": "Write this entry…",
+  "noteSubmit": "Submit this entry",
+  "noteSaving": "Submitting…",
 
   "gradePosEven": "Stage {n}",
   "@gradePosEven": {
@@ -160,5 +233,11 @@
       "when": { "type": "String" },
       "pos": { "type": "String" }
     }
-  }
+  },
+
+  "logDetailTitle": "Record Detail",
+  "logDetailContentLabel": "Content",
+  "logDetailPosLabel": "Position",
+  "logDetailTimeLabel": "Time",
+  "logDetailOpen": "View detail"
 }

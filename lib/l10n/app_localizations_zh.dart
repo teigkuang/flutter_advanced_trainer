@@ -110,6 +110,18 @@ class AppLocalizationsZh extends AppLocalizations {
   String get methodOther => '其他';
 
   @override
+  String get typeSport => '运动';
+
+  @override
+  String get typeTask => '事务';
+
+  @override
+  String get typeStudy => '学习';
+
+  @override
+  String get typeRecord => '记录';
+
+  @override
   String get failStay => '停留';
 
   @override
@@ -178,6 +190,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get refLabel => '参考量';
 
   @override
+  String get execEnter => '进入实施';
+
+  @override
   String get toastDoneFinish => '全部完成，已收官';
 
   @override
@@ -187,6 +202,104 @@ class AppLocalizationsZh extends AppLocalizations {
   String toastFail(String rule) {
     return '已标记未完成 · $rule';
   }
+
+  @override
+  String get fieldListFile => '清单 / 学习资料文件';
+
+  @override
+  String get listPickHint => '点击选择 .md / .txt 文件';
+
+  @override
+  String get listFileHint => '事务 / 学习任务需上传清单文件，执行时循环取用';
+
+  @override
+  String get errListEmpty => '所选文件为空';
+
+  @override
+  String get errListPick => '选择文件失败';
+
+  @override
+  String toastListUploaded(String name) {
+    return '已上传清单「$name」';
+  }
+
+  @override
+  String get metronomeTitle => '节拍器';
+
+  @override
+  String get metronomeBpm => '节奏 (BPM)';
+
+  @override
+  String get metronomeIdle => '待开始 · 点击开始';
+
+  @override
+  String get metronomePaused => '已暂停';
+
+  @override
+  String get metronomeRunning => '节拍中';
+
+  @override
+  String get metronomeStart => '开始';
+
+  @override
+  String get metronomePause => '暂停';
+
+  @override
+  String get metronomeEnd => '结束';
+
+  @override
+  String metronomeItem(int ref) {
+    return '本项参考量：$ref';
+  }
+
+  @override
+  String get checklistTitle => '清单';
+
+  @override
+  String get checklistMissing => '缺少清单文件，请重新上传';
+
+  @override
+  String checklistLoop(String file) {
+    return '清单：$file · 循环取用，取尽回开头';
+  }
+
+  @override
+  String get checklistFileLabel => '未命名清单';
+
+  @override
+  String checklistNeed(int n) {
+    return '本项需勾选 $n 条';
+  }
+
+  @override
+  String get checklistFinish => '全部勾选 · 完成本项';
+
+  @override
+  String get noteTitle => '书写记录';
+
+  @override
+  String noteNeed(int n) {
+    return '本项需提交 $n 笔';
+  }
+
+  @override
+  String notePos(String pos) {
+    return '所属位置：$pos';
+  }
+
+  @override
+  String noteSubmitted(int done, int total) {
+    return '已提交 $done / $total 笔';
+  }
+
+  @override
+  String get noteHint => '写下这一笔内容…';
+
+  @override
+  String get noteSubmit => '提交这一笔';
+
+  @override
+  String get noteSaving => '提交中…';
 
   @override
   String gradePosEven(int n) {
@@ -250,4 +363,19 @@ class AppLocalizationsZh extends AppLocalizations {
   String recordLine(String when, String pos) {
     return '$when · 完成了 $pos';
   }
+
+  @override
+  String get logDetailTitle => '记录详情';
+
+  @override
+  String get logDetailContentLabel => '记录内容';
+
+  @override
+  String get logDetailPosLabel => '所属位置';
+
+  @override
+  String get logDetailTimeLabel => '记录时间';
+
+  @override
+  String get logDetailOpen => '查看详情';
 }

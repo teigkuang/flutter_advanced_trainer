@@ -1,4 +1,10 @@
-/// 执行页：本次序列逐项标记 → 全部完成确认晋级 / 标记未完成回退。
+/// 执行页：本次序列逐项实施 → 点某一项跳对应任务类型的实施子页 → 完成动作返回后该项才推进。
+///
+/// 交互口径（第五轮定稿）：
+///   - 运动：跳节拍器子页（开始/暂停/结束，结束=完成返回推进）
+///   - 事务 / 学习：跳清单子页（循环取条目，勾满参考量推进）
+///   - 记录：跳书写子页（一次一笔，提交满参考量推进）
+///   - 已完成项不回看不重进（查看走相关记录页）；失败可再次进入；整次失败走"标记未完成"。
 library;
 
 import 'package:flutter/material.dart';
@@ -6,6 +12,9 @@ import 'package:flutter/material.dart';
 import '../engine/models.dart';
 import '../engine/progress_engine.dart';
 import 'app_scope.dart';
+import 'checklist_page.dart';
+import 'metronome_page.dart';
+import 'note_page.dart';
 import '../l10n/app_localizations.dart';
 import 'theme.dart';
 
@@ -19,29 +28,51 @@ class ExecutePage extends StatefulWidget {
 }
 
 class _ExecutePageState extends State<ExecutePage> {
-  late final List<bool> _checked;
+  late final List<bool> _done;
   late final List<int> _seq;
+  int _listCursor = 0; // 事务/学习：全局清单游标（仅整项完成时推进）
 
   @override
   void initState() {
     super.initState();
     _seq = widget.startState.sequence;
-    _checked = List.filled(_seq.length, false);
+    _done = List.filled(_seq.length, false);
   }
 
-  int get _done => _checked.where((e) => e).length;
+  int get _doneCount => _done.where((e) => e).length;
+  int get _current => _done.indexOf(false); // 当前项（第一个未完成）
 
-  /// 依次从上往下勾选：只能勾选上一项已完成后的下一项；
-  /// 取消时只允许取消最后勾选的那一项，保证顺序不被打破。
-  void _toggle(int i) {
-    setState(() {
-      if (_checked[i]) {
-        final isLastChecked = i == _seq.length - 1 || !_checked.skip(i + 1).any((e) => e);
-        if (isLastChecked) _checked[i] = false;
-      } else {
-        if (i == 0 || _checked[i - 1]) _checked[i] = true;
+  /// 进入某一项的实施子页；子页完成返回后该项才推进。
+  Future<void> _enter(int i) async {
+    final ref = _seq[i];
+    final type = widget.item.taskType;
+    final cur = ProgressState(
+        widget.startState.grade, widget.startState.level, widget.startState.rep);
+    if (type == '记录') {
+      final ok = await Navigator.of(context).push<bool>(MaterialPageRoute(
+        builder: (_) => NotePage(item: widget.item, ref: ref, cur: cur),
+      ));
+      if (ok == true && mounted) setState(() => _done[i] = true);
+      return;
+    }
+    if (type == '事务' || type == '学习') {
+      final next = await Navigator.of(context).push<int>(MaterialPageRoute(
+        builder: (_) => ChecklistPage(
+            item: widget.item, ref: ref, cursorStart: _listCursor),
+      ));
+      if (next != null && mounted) {
+        setState(() {
+          _done[i] = true;
+          _listCursor = next;
+        });
       }
-    });
+      return;
+    }
+    // 运动（默认）
+    final ok = await Navigator.of(context).push<bool>(MaterialPageRoute(
+      builder: (_) => MetronomePage(item: widget.item, ref: ref),
+    ));
+    if (ok == true && mounted) setState(() => _done[i] = true);
   }
 
   Future<void> _confirmDone() async {
@@ -103,7 +134,7 @@ class _ExecutePageState extends State<ExecutePage> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final total = _seq.length;
-    final pct = total == 0 ? 0.0 : _done / total;
+    final pct = total == 0 ? 0.0 : _doneCount / total;
     return Scaffold(
       appBar: AppBar(title: Text(l10n.executeTitle)),
       body: ListView(
@@ -114,7 +145,7 @@ class _ExecutePageState extends State<ExecutePage> {
               Text(l10n.todayTarget,
                   style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w700)),
               const Spacer(),
-              Text(l10n.checkedCount(_done, total),
+              Text(l10n.checkedCount(_doneCount, total),
                   style: const TextStyle(fontSize: 12, color: AppColors.mut)),
             ],
           ),
@@ -142,16 +173,17 @@ class _ExecutePageState extends State<ExecutePage> {
           ),
           const SizedBox(height: 16),
           for (int i = 0; i < _seq.length; i++)
-            _CheckItem(
+            _ItemCard(
               value: _seq[i],
               index: i,
-              checked: _checked[i],
-              locked: !_checked[i] && i > 0 && !_checked[i - 1],
-              onTap: () => _toggle(i),
+              done: _done[i],
+              current: i == _current,
+              locked: !_done[i] && i > 0 && !_done[i - 1],
+              onTap: _done[i] || (i > 0 && !_done[i - 1]) ? null : () => _enter(i),
             ),
           const SizedBox(height: 8),
           FilledButton(
-            onPressed: _done == total ? _confirmDone : null,
+            onPressed: _doneCount == total ? _confirmDone : null,
             child: Text(l10n.confirmDone),
           ),
           const SizedBox(height: 10),
@@ -162,33 +194,37 @@ class _ExecutePageState extends State<ExecutePage> {
   }
 }
 
-class _CheckItem extends StatelessWidget {
+class _ItemCard extends StatelessWidget {
   final int value;
   final int index;
-  final bool checked;
+  final bool done;
+  final bool current;
   final bool locked;
-  final VoidCallback onTap;
-  const _CheckItem({
+  final VoidCallback? onTap;
+  const _ItemCard({
     required this.value,
     required this.index,
-    required this.checked,
+    required this.done,
+    required this.current,
     required this.locked,
-    required this.onTap,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final bg = checked
+    final bg = done
         ? AppColors.okSoft
-        : (locked ? AppColors.dim : AppColors.card);
-    final border = checked ? AppColors.okSoft : (locked ? AppColors.dim : AppColors.line);
-    final boxColor = checked
+        : (locked ? AppColors.dim : (current ? AppColors.accSoft : AppColors.card));
+    final border = done
+        ? AppColors.okSoft
+        : (locked ? AppColors.dim : (current ? AppColors.acc : AppColors.line));
+    final boxColor = done
         ? AppColors.ok
         : (locked ? AppColors.mut : AppColors.card);
-    final boxBorder = checked ? AppColors.ok : (locked ? AppColors.mut : AppColors.line);
+    final boxBorder = done ? AppColors.ok : (locked ? AppColors.mut : AppColors.line);
     return InkWell(
-      onTap: locked ? null : onTap,
+      onTap: onTap,
       borderRadius: BorderRadius.circular(12),
       child: Container(
         margin: const EdgeInsets.only(bottom: 10),
@@ -209,7 +245,7 @@ class _CheckItem extends StatelessWidget {
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(color: boxBorder, width: 2),
               ),
-              child: checked
+              child: done
                   ? const Icon(Icons.check, size: 15, color: Colors.white)
                   : null,
             ),
@@ -223,6 +259,19 @@ class _CheckItem extends StatelessWidget {
               TextSpan(text: '$value',
                   style: const TextStyle(fontFamily: 'monospace', fontSize: 17, fontWeight: FontWeight.w600)),
             ])),
+            const SizedBox(width: 10),
+            if (done)
+              const Icon(Icons.check_circle, size: 18, color: AppColors.ok)
+            else if (current)
+              Row(children: [
+                Text(l10n.execEnter,
+                    style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.acc)),
+                const Icon(Icons.chevron_right, size: 18, color: AppColors.acc),
+              ])
+            else if (locked)
+              const Icon(Icons.lock_outline, size: 16, color: AppColors.mut)
+            else
+              const SizedBox.shrink(),
           ],
         ),
       ),

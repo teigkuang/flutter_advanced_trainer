@@ -44,6 +44,10 @@
   "methodStudy": "学习",
   "methodTask": "任务",
   "methodOther": "其他",
+  "typeSport": "运动",
+  "typeTask": "事务",
+  "typeStudy": "学习",
+  "typeRecord": "记录",
   "failStay": "停留",
   "failRecede": "回退",
   "achievedText": "已完成 {grade}・{level}",
@@ -102,6 +106,7 @@
     }
   },
   "refLabel": "参考量",
+  "execEnter": "进入实施",
   "toastDoneFinish": "全部完成，已收官",
   "toastAdvance": "已完成并晋级",
   "toastFail": "已标记未完成 · {rule}",
@@ -110,6 +115,74 @@
       "rule": { "type": "String" }
     }
   },
+
+  "fieldListFile": "清单 / 学习资料文件",
+  "listPickHint": "点击选择 .md / .txt 文件",
+  "listFileHint": "事务 / 学习任务需上传清单文件，执行时循环取用",
+  "errListEmpty": "所选文件为空",
+  "errListPick": "选择文件失败",
+  "toastListUploaded": "已上传清单「{name}」",
+  "@toastListUploaded": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+
+  "metronomeTitle": "节拍器",
+  "metronomeBpm": "节奏 (BPM)",
+  "metronomeIdle": "待开始 · 点击开始",
+  "metronomePaused": "已暂停",
+  "metronomeRunning": "节拍中",
+  "metronomeStart": "开始",
+  "metronomePause": "暂停",
+  "metronomeEnd": "结束",
+  "metronomeItem": "本项参考量：{ref}",
+  "@metronomeItem": {
+    "placeholders": {
+      "ref": { "type": "int" }
+    }
+  },
+
+  "checklistTitle": "清单",
+  "checklistMissing": "缺少清单文件，请重新上传",
+  "checklistLoop": "清单：{file} · 循环取用，取尽回开头",
+  "@checklistLoop": {
+    "placeholders": {
+      "file": { "type": "String" }
+    }
+  },
+  "checklistFileLabel": "未命名清单",
+  "checklistNeed": "本项需勾选 {n} 条",
+  "@checklistNeed": {
+    "placeholders": {
+      "n": { "type": "int" }
+    }
+  },
+  "checklistFinish": "全部勾选 · 完成本项",
+
+  "noteTitle": "书写记录",
+  "noteNeed": "本项需提交 {n} 笔",
+  "@noteNeed": {
+    "placeholders": {
+      "n": { "type": "int" }
+    }
+  },
+  "notePos": "所属位置：{pos}",
+  "@notePos": {
+    "placeholders": {
+      "pos": { "type": "String" }
+    }
+  },
+  "noteSubmitted": "已提交 {done} / {total} 笔",
+  "@noteSubmitted": {
+    "placeholders": {
+      "done": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "noteHint": "写下这一笔内容…",
+  "noteSubmit": "提交这一笔",
+  "noteSaving": "提交中…",
 
   "gradePosEven": "准第{n}阶",
   "@gradePosEven": {
@@ -160,5 +233,11 @@
       "when": { "type": "String" },
       "pos": { "type": "String" }
     }
-  }
+  },
+
+  "logDetailTitle": "记录详情",
+  "logDetailContentLabel": "记录内容",
+  "logDetailPosLabel": "所属位置",
+  "logDetailTimeLabel": "记录时间",
+  "logDetailOpen": "查看详情"
 }

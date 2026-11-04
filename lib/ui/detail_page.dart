@@ -109,7 +109,7 @@ class _DetailPageState extends State<DetailPage> {
               ]), style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
               const SizedBox(height: 5),
               Text.rich(TextSpan(children: [
-                TextSpan(text: l10n.methodLabel(item.trainingMethod),
+                TextSpan(text: l10n.methodLabel(item.taskType),
                     style: const TextStyle(fontSize: 12, color: AppColors.mut)),
                 if (item.goalText.isNotEmpty)
                   TextSpan(text: ' · ${l10n.goalHint(item.goalText)}',

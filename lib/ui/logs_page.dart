@@ -1,4 +1,10 @@
-/// 相关记录页：展示某任务全部完成记录（PASS），按时间倒序。
+/// 相关记录页：展示某任务完成记录。
+///
+/// 任务类型分支（第五轮定稿）：
+///   - 其他类型：PASS 完成记录，文案含完成时间与完成位置，不跳详情。
+///   - 记录类型：每条 = 一笔书写记录，展示内容（截断摘要）+时间，点击 → 记录详情页；
+///     PASS 晋级完成记录仍以文案展示、不可点。
+/// 均按时间倒序。
 library;
 
 import 'package:flutter/material.dart';
@@ -6,6 +12,7 @@ import 'package:flutter/material.dart';
 import '../engine/models.dart';
 import '../engine/progress_engine.dart';
 import 'app_scope.dart';
+import 'log_detail_page.dart';
 import '../l10n/app_localizations.dart';
 import 'theme.dart';
 
@@ -33,7 +40,10 @@ class _LogsPageState extends State<LogsPage> {
     final repo = AppScope.of(context).repository;
     final item = await repo.getItem(widget.itemId);
     final all = item == null ? <LogEntry>[] : await repo.listLogs(widget.itemId);
-    final logs = all.where((e) => e.result == 'PASS').toList();
+    final isNote = item?.taskType == '记录';
+    final logs = all
+        .where((e) => isNote ? (e.result == 'NOTE' || e.result == 'PASS') : e.result == 'PASS')
+        .toList();
     if (!mounted) return;
     setState(() {
       _item = item;
@@ -64,9 +74,15 @@ class _LogsPageState extends State<LogsPage> {
     return l10n.localeName == 'zh' ? '$pos任务' : pos;
   }
 
+  Future<void> _openDetail(LogEntry e) async {
+    await Navigator.of(context)
+        .push(MaterialPageRoute(builder: (_) => LogDetailPage(entry: e)));
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final isNote = _item?.taskType == '记录';
     final title = _item == null ? l10n.logsTitle : '${_item!.name} · ${l10n.logsTitle}';
     return Scaffold(
       appBar: AppBar(title: Text(title)),
@@ -78,21 +94,78 @@ class _LogsPageState extends State<LogsPage> {
                   padding: const EdgeInsets.all(16),
                   children: [
                     for (final e in _logs)
-                      Container(
-                        margin: const EdgeInsets.only(bottom: 10),
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: AppColors.card,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: AppColors.line),
+                      if (isNote && e.result == 'NOTE')
+                        _NoteCard(
+                          summary: e.note ?? '',
+                          when: _when(l10n, e.createdAt),
+                          onTap: () => _openDetail(e),
+                        )
+                      else
+                        Container(
+                          margin: const EdgeInsets.only(bottom: 10),
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: AppColors.card,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: AppColors.line),
+                          ),
+                          child: Text(
+                            l10n.recordLine(_when(l10n, e.createdAt), _pos(l10n, e)),
+                            style: const TextStyle(fontSize: 13, height: 1.6),
+                          ),
                         ),
-                        child: Text(
-                          l10n.recordLine(_when(l10n, e.createdAt), _pos(l10n, e)),
-                          style: const TextStyle(fontSize: 13, height: 1.6),
-                        ),
-                      ),
                   ],
                 ),
+    );
+  }
+}
+
+/// 记录类型的一笔书写记录：内容摘要 + 时间，点击进记录详情页。
+class _NoteCard extends StatelessWidget {
+  final String summary;
+  final String when;
+  final VoidCallback onTap;
+  const _NoteCard({required this.summary, required this.when, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final firstLine = summary.replaceAll('\n', ' ').trim();
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 10),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: AppColors.card,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: AppColors.line),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(firstLine,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(fontSize: 14, height: 1.5)),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                const Icon(Icons.article_outlined, size: 14, color: AppColors.mut),
+                const SizedBox(width: 4),
+                Expanded(
+                  child: Text(when,
+                      style: const TextStyle(fontSize: 12, color: AppColors.mut)),
+                ),
+                Text(l10n.logDetailOpen,
+                    style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.acc)),
+                const Icon(Icons.chevron_right, size: 16, color: AppColors.acc),
+              ],
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

@@ -290,6 +290,30 @@ abstract class AppLocalizations {
   /// **'Other'**
   String get methodOther;
 
+  /// No description provided for @typeSport.
+  ///
+  /// In en, this message translates to:
+  /// **'Sport'**
+  String get typeSport;
+
+  /// No description provided for @typeTask.
+  ///
+  /// In en, this message translates to:
+  /// **'Tasks'**
+  String get typeTask;
+
+  /// No description provided for @typeStudy.
+  ///
+  /// In en, this message translates to:
+  /// **'Study'**
+  String get typeStudy;
+
+  /// No description provided for @typeRecord.
+  ///
+  /// In en, this message translates to:
+  /// **'Record'**
+  String get typeRecord;
+
   /// No description provided for @failStay.
   ///
   /// In en, this message translates to:
@@ -398,6 +422,12 @@ abstract class AppLocalizations {
   /// **'Ref'**
   String get refLabel;
 
+  /// No description provided for @execEnter.
+  ///
+  /// In en, this message translates to:
+  /// **'Execute'**
+  String get execEnter;
+
   /// No description provided for @toastDoneFinish.
   ///
   /// In en, this message translates to:
@@ -415,6 +445,174 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Marked incomplete · {rule}'**
   String toastFail(String rule);
+
+  /// No description provided for @fieldListFile.
+  ///
+  /// In en, this message translates to:
+  /// **'List / study file'**
+  String get fieldListFile;
+
+  /// No description provided for @listPickHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to choose a .md / .txt file'**
+  String get listPickHint;
+
+  /// No description provided for @listFileHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Task/Study tasks need a list file, taken in a loop during execution'**
+  String get listFileHint;
+
+  /// No description provided for @errListEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected file is empty'**
+  String get errListEmpty;
+
+  /// No description provided for @errListPick.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to pick file'**
+  String get errListPick;
+
+  /// No description provided for @toastListUploaded.
+  ///
+  /// In en, this message translates to:
+  /// **'List \"{name}\" uploaded'**
+  String toastListUploaded(String name);
+
+  /// No description provided for @metronomeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Metronome'**
+  String get metronomeTitle;
+
+  /// No description provided for @metronomeBpm.
+  ///
+  /// In en, this message translates to:
+  /// **'Tempo (BPM)'**
+  String get metronomeBpm;
+
+  /// No description provided for @metronomeIdle.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready · tap start'**
+  String get metronomeIdle;
+
+  /// No description provided for @metronomePaused.
+  ///
+  /// In en, this message translates to:
+  /// **'Paused'**
+  String get metronomePaused;
+
+  /// No description provided for @metronomeRunning.
+  ///
+  /// In en, this message translates to:
+  /// **'Running'**
+  String get metronomeRunning;
+
+  /// No description provided for @metronomeStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Start'**
+  String get metronomeStart;
+
+  /// No description provided for @metronomePause.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause'**
+  String get metronomePause;
+
+  /// No description provided for @metronomeEnd.
+  ///
+  /// In en, this message translates to:
+  /// **'Finish'**
+  String get metronomeEnd;
+
+  /// No description provided for @metronomeItem.
+  ///
+  /// In en, this message translates to:
+  /// **'This item ref: {ref}'**
+  String metronomeItem(int ref);
+
+  /// No description provided for @checklistTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Checklist'**
+  String get checklistTitle;
+
+  /// No description provided for @checklistMissing.
+  ///
+  /// In en, this message translates to:
+  /// **'List file missing, please re-upload'**
+  String get checklistMissing;
+
+  /// No description provided for @checklistLoop.
+  ///
+  /// In en, this message translates to:
+  /// **'List: {file} · taken in loop, wrap around'**
+  String checklistLoop(String file);
+
+  /// No description provided for @checklistFileLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Unnamed list'**
+  String get checklistFileLabel;
+
+  /// No description provided for @checklistNeed.
+  ///
+  /// In en, this message translates to:
+  /// **'Check {n} items'**
+  String checklistNeed(int n);
+
+  /// No description provided for @checklistFinish.
+  ///
+  /// In en, this message translates to:
+  /// **'All checked · Finish item'**
+  String get checklistFinish;
+
+  /// No description provided for @noteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Write a record'**
+  String get noteTitle;
+
+  /// No description provided for @noteNeed.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit {n} entries'**
+  String noteNeed(int n);
+
+  /// No description provided for @notePos.
+  ///
+  /// In en, this message translates to:
+  /// **'Position: {pos}'**
+  String notePos(String pos);
+
+  /// No description provided for @noteSubmitted.
+  ///
+  /// In en, this message translates to:
+  /// **'Submitted {done} / {total}'**
+  String noteSubmitted(int done, int total);
+
+  /// No description provided for @noteHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Write this entry…'**
+  String get noteHint;
+
+  /// No description provided for @noteSubmit.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit this entry'**
+  String get noteSubmit;
+
+  /// No description provided for @noteSaving.
+  ///
+  /// In en, this message translates to:
+  /// **'Submitting…'**
+  String get noteSaving;
 
   /// No description provided for @gradePosEven.
   ///
@@ -517,6 +715,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{when} · Completed {pos}'**
   String recordLine(String when, String pos);
+
+  /// No description provided for @logDetailTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Record Detail'**
+  String get logDetailTitle;
+
+  /// No description provided for @logDetailContentLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Content'**
+  String get logDetailContentLabel;
+
+  /// No description provided for @logDetailPosLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Position'**
+  String get logDetailPosLabel;
+
+  /// No description provided for @logDetailTimeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Time'**
+  String get logDetailTimeLabel;
+
+  /// No description provided for @logDetailOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'View detail'**
+  String get logDetailOpen;
 }
 
 class _AppLocalizationsDelegate

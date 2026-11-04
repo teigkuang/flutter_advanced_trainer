@@ -32,7 +32,7 @@ class AppDatabase {
     final path = p.join(dir.path, 'advance_trainer.db');
     _db = await openDatabase(
       path,
-      version: 2,
+      version: 3,
       onCreate: _onCreate,
       onUpgrade: _onUpgrade,
     );
@@ -45,8 +45,16 @@ class AppDatabase {
       for (final col in ['training_method', 'goal_text']) {
         final exists = await _columnExists(db, 'training_item', col);
         if (!exists) {
-          final type = col == 'training_method' ? 'TEXT' : 'TEXT';
-          await db.execute('ALTER TABLE training_item ADD COLUMN $col $type');
+          await db.execute('ALTER TABLE training_item ADD COLUMN $col TEXT');
+        }
+      }
+    }
+    if (oldVersion < 3) {
+      // v3：任务类型（运动/事务/学习/记录）+ 清单文件（事务/学习）
+      for (final col in ['task_type', 'list_file_path', 'list_file_name']) {
+        final exists = await _columnExists(db, 'training_item', col);
+        if (!exists) {
+          await db.execute('ALTER TABLE training_item ADD COLUMN $col TEXT');
         }
       }
     }
@@ -63,8 +71,11 @@ class AppDatabase {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL UNIQUE,
         training_method TEXT,
+        task_type TEXT,
         goal_text TEXT,
         metric_unit TEXT,
+        list_file_path TEXT,
+        list_file_name TEXT,
         begin_num INTEGER NOT NULL,
         plus_var INTEGER NOT NULL,
         d_grade INTEGER NOT NULL,

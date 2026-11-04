@@ -152,6 +152,8 @@ class _ManagePageState extends State<ManagePage> {
         children: [
           Row(
             children: [
+              _TypePill(type: item.taskType),
+              const SizedBox(width: 8),
               Expanded(
                 child: Text(item.name,
                     style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w700)),
@@ -178,6 +180,32 @@ class _ManagePageState extends State<ManagePage> {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _TypePill extends StatelessWidget {
+  final String type;
+  const _TypePill({required this.type});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final label = switch (type) {
+      '事务' => l10n.typeTask,
+      '学习' => l10n.typeStudy,
+      '记录' => l10n.typeRecord,
+      _ => l10n.typeSport,
+    };
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+      decoration: BoxDecoration(
+        color: AppColors.paper,
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(color: AppColors.line),
+      ),
+      child: Text(label,
+          style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: AppColors.mut)),
     );
   }
 }

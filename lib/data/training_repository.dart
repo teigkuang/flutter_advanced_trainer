@@ -4,6 +4,8 @@
 /// 届时新增一个基于网络/账号的 `TrainingRepository` 实现替换即可，UI 不变。
 library;
 
+import 'dart:io';
+
 import 'package:sqflite/sqflite.dart';
 
 import '../engine/models.dart';
@@ -43,8 +45,11 @@ class SqliteTrainingRepository implements TrainingRepository {
     final id = await db.insert('training_item', {
       'name': item.name,
       'training_method': item.trainingMethod,
+      'task_type': item.taskType,
       'goal_text': item.goalText,
       'metric_unit': item.metricUnit,
+      'list_file_path': item.listFilePath,
+      'list_file_name': item.listFileName,
       'begin_num': item.beginNum,
       'plus_var': item.plusVar,
       'd_grade': item.dGrade,
@@ -63,8 +68,11 @@ class SqliteTrainingRepository implements TrainingRepository {
     await db.update('training_item', {
       'name': item.name,
       'training_method': item.trainingMethod,
+      'task_type': item.taskType,
       'goal_text': item.goalText,
       'metric_unit': item.metricUnit,
+      'list_file_path': item.listFilePath,
+      'list_file_name': item.listFileName,
       'begin_num': item.beginNum,
       'plus_var': item.plusVar,
       'd_grade': item.dGrade,
@@ -77,6 +85,18 @@ class SqliteTrainingRepository implements TrainingRepository {
   @override
   Future<void> deleteItem(int id) async {
     final db = await AppDatabase.instance;
+    // 先清理清单文件（磁盘，应用文档目录内）
+    final rows = await db.query('training_item',
+        columns: ['list_file_path'], where: 'id = ?', whereArgs: [id]);
+    if (rows.isNotEmpty) {
+      final fp = rows.first['list_file_path'] as String?;
+      if (fp != null && fp.isNotEmpty) {
+        try {
+          final f = File(fp);
+          if (await f.exists()) await f.delete();
+        } catch (_) {/* 忽略文件清理失败 */}
+      }
+    }
     await db.transaction((txn) async {
       await txn.delete('completion_log', where: 'item_id = ?', whereArgs: [id]);
       await txn.delete('progress', where: 'item_id = ?', whereArgs: [id]);
@@ -148,12 +168,21 @@ class SqliteTrainingRepository implements TrainingRepository {
     return rows.map(_logFromRow).toList();
   }
 
-  TrainingItem _itemFromRow(Map<String, Object?> row) => TrainingItem(
+  TrainingItem _itemFromRow(Map<String, Object?> row) {
+    final old = (row['training_method'] as String?) ?? '';
+    final type = (row['task_type'] as String?) ?? '';
+    final taskType = type.isNotEmpty
+        ? type
+        : (const {'运动', '事务', '学习', '记录'}.contains(old) ? old : '运动');
+    return TrainingItem(
         id: row['id'] as int?,
         name: row['name'] as String,
-        trainingMethod: (row['training_method'] as String?) ?? '运动',
+        taskType: taskType,
+        trainingMethod: (row['training_method'] as String?) ?? taskType,
         goalText: (row['goal_text'] as String?) ?? '',
         metricUnit: (row['metric_unit'] as String?) ?? '',
+        listFilePath: (row['list_file_path'] as String?) ?? '',
+        listFileName: (row['list_file_name'] as String?) ?? '',
         beginNum: row['begin_num'] as int,
         plusVar: row['plus_var'] as int,
         dGrade: row['d_grade'] as int,
@@ -162,6 +191,7 @@ class SqliteTrainingRepository implements TrainingRepository {
         status: (row['status'] as String?) ?? 'ACTIVE',
         createdAt: (row['created_at'] as String?) ?? '',
       );
+  }
 
   LogEntry _logFromRow(Map<String, Object?> row) => LogEntry(
         id: row['id'] as int?,

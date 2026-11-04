@@ -112,6 +112,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get methodOther => 'Other';
 
   @override
+  String get typeSport => 'Sport';
+
+  @override
+  String get typeTask => 'Tasks';
+
+  @override
+  String get typeStudy => 'Study';
+
+  @override
+  String get typeRecord => 'Record';
+
+  @override
   String get failStay => 'Stay';
 
   @override
@@ -180,6 +192,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get refLabel => 'Ref';
 
   @override
+  String get execEnter => 'Execute';
+
+  @override
   String get toastDoneFinish => 'All done — training complete';
 
   @override
@@ -189,6 +204,105 @@ class AppLocalizationsEn extends AppLocalizations {
   String toastFail(String rule) {
     return 'Marked incomplete · $rule';
   }
+
+  @override
+  String get fieldListFile => 'List / study file';
+
+  @override
+  String get listPickHint => 'Tap to choose a .md / .txt file';
+
+  @override
+  String get listFileHint =>
+      'Task/Study tasks need a list file, taken in a loop during execution';
+
+  @override
+  String get errListEmpty => 'Selected file is empty';
+
+  @override
+  String get errListPick => 'Failed to pick file';
+
+  @override
+  String toastListUploaded(String name) {
+    return 'List \"$name\" uploaded';
+  }
+
+  @override
+  String get metronomeTitle => 'Metronome';
+
+  @override
+  String get metronomeBpm => 'Tempo (BPM)';
+
+  @override
+  String get metronomeIdle => 'Ready · tap start';
+
+  @override
+  String get metronomePaused => 'Paused';
+
+  @override
+  String get metronomeRunning => 'Running';
+
+  @override
+  String get metronomeStart => 'Start';
+
+  @override
+  String get metronomePause => 'Pause';
+
+  @override
+  String get metronomeEnd => 'Finish';
+
+  @override
+  String metronomeItem(int ref) {
+    return 'This item ref: $ref';
+  }
+
+  @override
+  String get checklistTitle => 'Checklist';
+
+  @override
+  String get checklistMissing => 'List file missing, please re-upload';
+
+  @override
+  String checklistLoop(String file) {
+    return 'List: $file · taken in loop, wrap around';
+  }
+
+  @override
+  String get checklistFileLabel => 'Unnamed list';
+
+  @override
+  String checklistNeed(int n) {
+    return 'Check $n items';
+  }
+
+  @override
+  String get checklistFinish => 'All checked · Finish item';
+
+  @override
+  String get noteTitle => 'Write a record';
+
+  @override
+  String noteNeed(int n) {
+    return 'Submit $n entries';
+  }
+
+  @override
+  String notePos(String pos) {
+    return 'Position: $pos';
+  }
+
+  @override
+  String noteSubmitted(int done, int total) {
+    return 'Submitted $done / $total';
+  }
+
+  @override
+  String get noteHint => 'Write this entry…';
+
+  @override
+  String get noteSubmit => 'Submit this entry';
+
+  @override
+  String get noteSaving => 'Submitting…';
 
   @override
   String gradePosEven(int n) {
@@ -254,4 +368,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String recordLine(String when, String pos) {
     return '$when · Completed $pos';
   }
+
+  @override
+  String get logDetailTitle => 'Record Detail';
+
+  @override
+  String get logDetailContentLabel => 'Content';
+
+  @override
+  String get logDetailPosLabel => 'Position';
+
+  @override
+  String get logDetailTimeLabel => 'Time';
+
+  @override
+  String get logDetailOpen => 'View detail';
 }

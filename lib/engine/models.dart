@@ -51,9 +51,12 @@ class RepData {
 class TrainingItem {
   int? id;
   String name;
-  String trainingMethod; // 训练方式：运动 / 学习 / 任务 / 其他
+  String taskType; // 任务类型：运动 / 事务 / 学习 / 记录（替换原 trainingMethod 选项语义）
+  String trainingMethod; // 旧字段（训练方式），兼容旧数据迁移；新数据写入与 taskType 一致
   String goalText; // 具体实施目标（执行页提示）
   String metricUnit; // 数字代表单位（旧字段，已停用：显示层由"训练方式"取代）
+  String listFilePath; // 事务/学习：清单文件在应用文档目录的路径（无则空）
+  String listFileName; // 事务/学习：清单文件原始文件名（无则空）
   int beginNum; // A 起始数
   int plusVar; // P 增加量
   int dGrade; // G 内部阶数基准（显示层"阶数" = dGrade/2 - 1）
@@ -65,9 +68,12 @@ class TrainingItem {
   TrainingItem({
     this.id,
     required this.name,
+    this.taskType = '运动',
     this.trainingMethod = '运动',
     this.goalText = '',
     this.metricUnit = '',
+    this.listFilePath = '',
+    this.listFileName = '',
     required this.beginNum,
     required this.plusVar,
     required this.dGrade,

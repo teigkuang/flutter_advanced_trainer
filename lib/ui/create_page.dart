@@ -1,8 +1,12 @@
 /// 新建任务页：收集参数 → 校验 → 创建。
 library;
 
+import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:path_provider/path_provider.dart';
 
 import '../engine/models.dart';
 import '../engine/progress_engine.dart';
@@ -26,7 +30,9 @@ class _CreatePageState extends State<CreatePage> {
   final _plus = TextEditingController(text: '1');
   final _beginG = TextEditingController(text: '0');
   final _goal = TextEditingController();
-  late String _method = widget.item?.trainingMethod ?? '运动';
+  late String _method = '运动';
+  String _listFilePath = '';
+  String _listFileName = '';
   late String _failRule = widget.item?.failRule == 'RECEDE' ? '回退' : '停留';
   String? _nameError;
 
@@ -37,12 +43,15 @@ class _CreatePageState extends State<CreatePage> {
     super.initState();
     final it = widget.item;
     if (it != null) {
+      _method = it.taskType.isNotEmpty ? it.taskType : it.trainingMethod;
       _name.text = it.name;
       _grade.text = '${it.displayGrade}';
       _begin.text = '${it.beginNum}';
       _plus.text = '${it.plusVar}';
       _beginG.text = '${it.displayBeginGrade}';
       _goal.text = it.goalText;
+      _listFilePath = it.listFilePath;
+      _listFileName = it.listFileName;
     }
   }
 
@@ -86,9 +95,12 @@ class _CreatePageState extends State<CreatePage> {
       final updated = TrainingItem(
         id: src.id,
         name: name,
+        taskType: _method,
         trainingMethod: _method,
         goalText: _goal.text.trim(),
         metricUnit: src.metricUnit,
+        listFilePath: _listFilePath,
+        listFileName: _listFileName,
         beginNum: begin,
         plusVar: plus,
         dGrade: TrainingItem.dGradeFromDisplay(grade),
@@ -105,8 +117,11 @@ class _CreatePageState extends State<CreatePage> {
     }
     final item = TrainingItem(
       name: name,
+      taskType: _method,
       trainingMethod: _method,
       goalText: _goal.text.trim(),
+      listFilePath: _listFilePath,
+      listFileName: _listFileName,
       beginNum: begin,
       plusVar: plus,
       dGrade: TrainingItem.dGradeFromDisplay(grade),
@@ -120,6 +135,40 @@ class _CreatePageState extends State<CreatePage> {
     if (!mounted) return;
     _toast(l10n.toastCreated(name));
     Navigator.of(context).pop(true);
+  }
+
+  /// 事务 / 学习：选择清单 / 学习资料文件（.md / .txt）并复制进应用文档目录。
+  Future<void> _pickListFile() async {
+    final l10n = AppLocalizations.of(context)!;
+    try {
+      final res = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: const ['md', 'txt'],
+        allowMultiple: false,
+      );
+      if (res == null || res.files.isEmpty) return;
+      final f = res.files.single;
+      final bytes = f.bytes ??
+          (f.path != null ? await File(f.path!).readAsBytes() : null);
+      if (bytes == null || bytes.isEmpty) {
+        _toast(l10n.errListEmpty);
+        return;
+      }
+      final dir = await getApplicationDocumentsDirectory();
+      final ext = (f.extension ?? '').isNotEmpty ? f.extension : 'txt';
+      final saveName = 'list_${DateTime.now().millisecondsSinceEpoch}.$ext';
+      final dest = File('${dir.path}${Platform.pathSeparator}$saveName');
+      await dest.writeAsBytes(bytes, flush: true);
+      if (!mounted) return;
+      setState(() {
+        _listFilePath = dest.path;
+        _listFileName = f.name;
+      });
+      _toast(l10n.toastListUploaded(f.name));
+    } catch (_) {
+      if (!mounted) return;
+      _toast(l10n.errListPick);
+    }
   }
 
   void _toast(String msg) {
@@ -159,6 +208,7 @@ class _CreatePageState extends State<CreatePage> {
               Expanded(child: _failField(l10n)),
             ],
           ),
+          if (_method == '事务' || _method == '学习') _listField(l10n),
           const SizedBox(height: 2),
           _field(l10n.fieldGoal, controller: _goal, hint: l10n.hintGoal),
           const SizedBox(height: 6),
@@ -310,13 +360,76 @@ class _CreatePageState extends State<CreatePage> {
     return _appDropdown(
       l10n.fieldMethod,
       [
-        const MapEntry('运动', '运动'),
-        const MapEntry('学习', '学习'),
-        const MapEntry('任务', '任务'),
-        const MapEntry('其他', '其他'),
+        MapEntry('运动', l10n.typeSport),
+        MapEntry('事务', l10n.typeTask),
+        MapEntry('学习', l10n.typeStudy),
+        MapEntry('记录', l10n.typeRecord),
       ],
       _method,
-      (v) => setState(() => _method = v),
+      (v) => setState(() {
+        _method = v;
+        // 切换任务类型时若此前传了清单文件，保持（仅事务/学习使用）
+        if (v != '事务' && v != '学习' && _listFilePath.isNotEmpty) {
+          _listFilePath = '';
+          _listFileName = '';
+        }
+      }),
+    );
+  }
+
+  /// 事务 / 学习：清单 / 学习资料文件上传块。
+  Widget _listField(AppLocalizations l10n) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 14),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(left: 2, bottom: 6),
+            child: Text(l10n.fieldListFile,
+                style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
+          ),
+          InkWell(
+            onTap: _pickListFile,
+            borderRadius: BorderRadius.circular(8),
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+              decoration: BoxDecoration(
+                color: AppColors.card,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: AppColors.line),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.upload_file, size: 20, color: AppColors.acc),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      _listFileName.isEmpty ? l10n.listPickHint : _listFileName,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                          fontSize: 14,
+                          color: _listFileName.isEmpty ? AppColors.mut : AppColors.ink),
+                    ),
+                  ),
+                  if (_listFileName.isNotEmpty)
+                    GestureDetector(
+                      onTap: () => setState(() {
+                        _listFilePath = '';
+                        _listFileName = '';
+                      }),
+                      child: const Icon(Icons.close, size: 18, color: AppColors.mut),
+                    ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 5),
+          Text(l10n.listFileHint,
+              style: const TextStyle(fontSize: 11, color: AppColors.mut)),
+        ],
+      ),
     );
   }
 

@@ -41,6 +41,7 @@ dependencies:
   sqflite_common_ffi: ^2.4.5
   path_provider: ^2.1.6
   path: ^1.9.1
+  file_picker: ^8.1.7
 
 dev_dependencies:
   flutter_test:
@@ -53,6 +54,11 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
   flutter_launcher_icons: ^0.14.4
+
+# 锁 flutter_plugin_android_lifecycle 到 compileSdk 34 兼容版本，
+# 避免新版(要求 compileSdk 36)与工程现有 compileSdk 34 冲突。
+dependency_overrides:
+  flutter_plugin_android_lifecycle: 2.0.20
 
 # App launcher icon generation (see https://pub.dev/packages/flutter_launcher_icons)
 flutter_launcher_icons:
