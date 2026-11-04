@@ -8,6 +8,7 @@ library;
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 
 import '../engine/checklist_parser.dart';
 import '../engine/models.dart';
@@ -144,6 +145,27 @@ class _ChecklistPageState extends State<ChecklistPage> {
     );
   }
 
+  /// 学习/事务条目正文的 Markdown 样式：贴合 App 主题（暖橙、小字号、代码高亮）。
+  MarkdownStyleSheet _mdStyle(BuildContext context) {
+    final base = Theme.of(context);
+    return MarkdownStyleSheet.fromTheme(base).copyWith(
+      p: const TextStyle(fontSize: 12, color: AppColors.mut, height: 1.55),
+      strong: const TextStyle(fontWeight: FontWeight.w700, color: AppColors.ink),
+      em: const TextStyle(fontStyle: FontStyle.italic),
+      code: const TextStyle(
+        fontFamily: 'monospace',
+        fontSize: 11,
+        color: AppColors.acc,
+        backgroundColor: AppColors.accSoft,
+      ),
+      listBullet: const TextStyle(color: AppColors.acc),
+      blockquoteDecoration: BoxDecoration(
+        color: AppColors.dim,
+        borderRadius: BorderRadius.circular(6),
+      ),
+    );
+  }
+
   Widget _entryCard(AppLocalizations l10n, int i) {
     final e = _at(i);
     final checked = _checked[i];
@@ -187,8 +209,11 @@ class _ChecklistPageState extends State<ChecklistPage> {
                       style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
                   if (e.body.isNotEmpty) ...[
                     const SizedBox(height: 3),
-                    Text(e.body,
-                        style: const TextStyle(fontSize: 12, color: AppColors.mut, height: 1.5)),
+                    MarkdownBody(
+                      data: e.body,
+                      styleSheet: _mdStyle(context),
+                      shrinkWrap: true,
+                    ),
                   ],
                 ],
               ),
