@@ -61,6 +61,7 @@ class TrainingItem {
   int plusVar; // P 增加量
   int dGrade; // G 内部阶数基准（显示层"阶数" = dGrade/2 - 1）
   int beginGrade; // B 内部起始阶基准（显示层"起始阶数" = (beginGrade-1)/2）
+  int bpm; // 运动：节拍器 BPM（40~208，默认 120；创建/执行/编辑三处读写，最终一致）
   String failRule; // STAY 停留 / RECEDE 回退
   String status; // ACTIVE / DONE
   String createdAt; // yyyy-MM-dd
@@ -78,6 +79,7 @@ class TrainingItem {
     required this.plusVar,
     required this.dGrade,
     required this.beginGrade,
+    this.bpm = 120,
     this.failRule = 'STAY',
     this.status = 'ACTIVE',
     required this.createdAt,

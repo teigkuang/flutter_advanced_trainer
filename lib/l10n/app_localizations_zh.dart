@@ -67,6 +67,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get fieldFailRule => '未完成规则';
 
   @override
+  String get fieldBpm => '节奏 BPM';
+
+  @override
+  String get bpmHint => '运动任务执行时使用的节拍速度（40~208，默认 120）';
+
+  @override
   String get hintName => '如：胸肌卧推';
 
   @override
@@ -387,4 +393,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get logDetailOpen => '查看详情';
+
+  @override
+  String noteInSession(int n) {
+    return '本次共 $n 笔记录';
+  }
 }

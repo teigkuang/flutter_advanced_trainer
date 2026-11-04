@@ -17,17 +17,30 @@ import 'theme.dart';
 class MetronomePage extends StatefulWidget {
   final TrainingItem item;
   final int ref; // 当前项参考量
-  const MetronomePage({super.key, required this.item, required this.ref});
+  final int initialBpm; // 任务级 BPM（默认 120）
+  const MetronomePage({
+    super.key,
+    required this.item,
+    required this.ref,
+    this.initialBpm = 120,
+  });
 
   @override
   State<MetronomePage> createState() => _MetronomePageState();
+}
+
+/// 节拍器返回结果：是否完成当前项 + 结束后 BPM（供执行页写回任务，保持同步）。
+class MetronomeResult {
+  final bool finished;
+  final int bpm;
+  const MetronomeResult(this.finished, this.bpm);
 }
 
 class _MetronomePageState extends State<MetronomePage> {
   static const _minBpm = 40;
   static const _maxBpm = 208;
 
-  int _bpm = 120;
+  late int _bpm;
   String _state = 'idle'; // idle / run / pause
   Timer? _timer;
   int _beat = 0; // 已播的嘀嗒数（仅用于节拍指示点闪烁，不显示数字）
@@ -37,6 +50,7 @@ class _MetronomePageState extends State<MetronomePage> {
   @override
   void initState() {
     super.initState();
+    _bpm = widget.initialBpm.clamp(_minBpm, _maxBpm);
     _initAudio();
   }
 
@@ -147,9 +161,9 @@ class _MetronomePageState extends State<MetronomePage> {
   }
 
   void _end() {
-    // 结束 = 完成当前项，返回推进
+    // 结束 = 完成当前项，返回推进；同时把当前 BPM 带回（供执行页写回任务）
     _timer?.cancel();
-    Navigator.of(context).pop(true);
+    Navigator.of(context).pop(MetronomeResult(true, _bpm));
   }
 
   @override

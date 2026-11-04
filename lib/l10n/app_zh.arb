@@ -20,6 +20,8 @@
   "fieldMethod": "任务类型",
   "fieldGoal": "具体实施目标",
   "fieldFailRule": "未完成规则",
+  "fieldBpm": "节奏 BPM",
+  "bpmHint": "运动任务执行时使用的节拍速度（40~208，默认 120）",
   "hintName": "如：胸肌卧推",
   "hintGoal": "如：每日 50 个俯卧撑，每组间隔 1 分钟",
   "errNameEmpty": "请填写名称",
@@ -242,5 +244,11 @@
   "logDetailContentLabel": "记录内容",
   "logDetailPosLabel": "所属位置",
   "logDetailTimeLabel": "记录时间",
-  "logDetailOpen": "查看详情"
+  "logDetailOpen": "查看详情",
+  "noteInSession": "本次共 {n} 笔记录",
+  "@noteInSession": {
+    "placeholders": {
+      "n": { "type": "int" }
+    }
+  }
 }

@@ -32,7 +32,7 @@ class AppDatabase {
     final path = p.join(dir.path, 'advance_trainer.db');
     _db = await openDatabase(
       path,
-      version: 3,
+      version: 4,
       onCreate: _onCreate,
       onUpgrade: _onUpgrade,
     );
@@ -58,6 +58,13 @@ class AppDatabase {
         }
       }
     }
+    if (oldVersion < 4) {
+      // v4：运动任务节拍器 BPM
+      final exists = await _columnExists(db, 'training_item', 'bpm');
+      if (!exists) {
+        await db.execute('ALTER TABLE training_item ADD COLUMN bpm INTEGER');
+      }
+    }
   }
 
   static Future<bool> _columnExists(Database db, String table, String column) async {
@@ -80,6 +87,7 @@ class AppDatabase {
         plus_var INTEGER NOT NULL,
         d_grade INTEGER NOT NULL,
         begin_grade INTEGER NOT NULL,
+        bpm INTEGER,
         fail_rule TEXT,
         status TEXT,
         created_at TEXT

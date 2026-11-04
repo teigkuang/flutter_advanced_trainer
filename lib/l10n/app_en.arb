@@ -20,6 +20,8 @@
   "fieldMethod": "Task type",
   "fieldGoal": "Specific goal",
   "fieldFailRule": "On failure",
+  "fieldBpm": "Tempo BPM",
+  "bpmHint": "Metronome tempo used on execution (40\u2013208, default 120)",
   "hintName": "e.g. Bench press",
   "hintGoal": "e.g. 50 push-ups daily, 1 min rest between sets",
   "errNameEmpty": "Please enter a name",
@@ -242,5 +244,11 @@
   "logDetailContentLabel": "Content",
   "logDetailPosLabel": "Position",
   "logDetailTimeLabel": "Time",
-  "logDetailOpen": "View detail"
+  "logDetailOpen": "View detail",
+  "noteInSession": "{n} entries in this session",
+  "@noteInSession": {
+    "placeholders": {
+      "n": { "type": "int" }
+    }
+  }
 }

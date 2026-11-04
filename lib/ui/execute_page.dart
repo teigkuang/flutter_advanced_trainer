@@ -68,11 +68,17 @@ class _ExecutePageState extends State<ExecutePage> {
       }
       return;
     }
-    // 运动（默认）
-    final ok = await Navigator.of(context).push<bool>(MaterialPageRoute(
-      builder: (_) => MetronomePage(item: widget.item, ref: ref),
+    // 运动（默认）：结束=完成返回推进；若节拍器里改了 BPM，写回任务保持一致。
+    final res = await Navigator.of(context).push<MetronomeResult>(MaterialPageRoute(
+      builder: (_) => MetronomePage(
+          item: widget.item, ref: ref, initialBpm: widget.item.bpm),
     ));
-    if (ok == true && mounted) setState(() => _done[i] = true);
+    if (res != null && res.finished && mounted) {
+      setState(() => _done[i] = true);
+      if (res.bpm != widget.item.bpm) {
+        await AppScope.of(context).repository.updateItemBpm(widget.item.id!, res.bpm);
+      }
+    }
   }
 
   Future<void> _confirmDone() async {

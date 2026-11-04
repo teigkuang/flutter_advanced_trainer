@@ -68,6 +68,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get fieldFailRule => 'On failure';
 
   @override
+  String get fieldBpm => 'Tempo BPM';
+
+  @override
+  String get bpmHint =>
+      'Metronome tempo used on execution (40–208, default 120)';
+
+  @override
   String get hintName => 'e.g. Bench press';
 
   @override
@@ -392,4 +399,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get logDetailOpen => 'View detail';
+
+  @override
+  String noteInSession(int n) {
+    return '$n entries in this session';
+  }
 }

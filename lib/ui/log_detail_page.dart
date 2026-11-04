@@ -1,5 +1,8 @@
-/// 记录详情页：展示某笔书写记录（记录类型任务）的完整内容、所属完成位置与时间。
-/// 仅记录类型任务可进入（点击相关记录页的记录项）；其他类型无此详情页。
+/// 记录详情页：展示记录类型任务"某一次任务完成"的综合记录。
+///
+/// 由相关记录页点击某次（PASS 完成记录）进入；展示该次所属位置、完成时间，
+/// 以及该次（同阶/级/次位置）的全部书写记录内容，综合到一起。
+/// 仅记录类型任务可进入；其他类型无此详情页。
 library;
 
 import 'package:flutter/material.dart';
@@ -10,8 +13,9 @@ import '../l10n/app_localizations.dart';
 import 'theme.dart';
 
 class LogDetailPage extends StatelessWidget {
-  final LogEntry entry;
-  const LogDetailPage({super.key, required this.entry});
+  final LogEntry pass; // 该次完成记录（PASS）
+  final List<LogEntry> notes; // 该次全部书写记录（NOTE）
+  const LogDetailPage({super.key, required this.pass, required this.notes});
 
   String _when(AppLocalizations l10n, String iso) {
     final dt = DateTime.tryParse(iso);
@@ -50,11 +54,13 @@ class LogDetailPage extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(l10n.logDetailContentLabel,
+                Text(l10n.logDetailPosLabel,
                     style: const TextStyle(fontSize: 12, color: AppColors.mut)),
                 const SizedBox(height: 8),
-                SelectableText(entry.note ?? '',
-                    style: const TextStyle(fontSize: 15, height: 1.7)),
+                Text('${_pos(l10n, pass)}任务',
+                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+                const SizedBox(height: 10),
+                _row(l10n.logDetailTimeLabel, _when(l10n, pass.createdAt)),
               ],
             ),
           ),
@@ -69,9 +75,28 @@ class LogDetailPage extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _row(l10n.logDetailPosLabel, _pos(l10n, entry)),
-                const SizedBox(height: 10),
-                _row(l10n.logDetailTimeLabel, _when(l10n, entry.createdAt)),
+                Row(
+                  children: [
+                    Text(l10n.logDetailContentLabel,
+                        style: const TextStyle(fontSize: 12, color: AppColors.mut)),
+                    const Spacer(),
+                    Text(l10n.noteInSession(notes.length),
+                        style: const TextStyle(fontSize: 12, color: AppColors.mut)),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                if (notes.isEmpty)
+                  Text(l10n.logsEmpty,
+                      style: const TextStyle(fontSize: 13, color: AppColors.mut))
+                else
+                  for (int i = 0; i < notes.length; i++) ...[
+                    if (i > 0)
+                      Divider(height: 24, color: AppColors.line),
+                    SelectableText(
+                      notes[i].note ?? '',
+                      style: const TextStyle(fontSize: 15, height: 1.7),
+                    ),
+                  ],
               ],
             ),
           ),

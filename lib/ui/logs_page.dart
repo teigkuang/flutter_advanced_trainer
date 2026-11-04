@@ -1,9 +1,9 @@
 /// 相关记录页：展示某任务完成记录。
 ///
-/// 任务类型分支（第五轮定稿）：
+/// 任务类型分支（第五轮定稿 + 本轮修订）：
 ///   - 其他类型：PASS 完成记录，文案含完成时间与完成位置，不跳详情。
-///   - 记录类型：每条 = 一笔书写记录，展示内容（截断摘要）+时间，点击 → 记录详情页；
-///     PASS 晋级完成记录仍以文案展示、不可点。
+///   - 记录类型：只展示"任务完成记录"条目（每次完成一条 = PASS 记录），
+///     点击某次 → 详情页综合展示该次（同阶/级/次位置）的全部书写记录。
 /// 均按时间倒序。
 library;
 
@@ -26,7 +26,8 @@ class LogsPage extends StatefulWidget {
 
 class _LogsPageState extends State<LogsPage> {
   TrainingItem? _item;
-  List<LogEntry> _logs = const [];
+  List<LogEntry> _logs = const []; // 列表展示条目（其他类型/记录类型均为 PASS 完成记录）
+  List<LogEntry> _notes = const []; // 记录类型：全部书写记录（NOTE），按位置聚合进对应次
   bool _loading = true;
 
   @override
@@ -41,9 +42,10 @@ class _LogsPageState extends State<LogsPage> {
     final item = await repo.getItem(widget.itemId);
     final all = item == null ? <LogEntry>[] : await repo.listLogs(widget.itemId);
     final isNote = item?.taskType == '记录';
-    final logs = all
-        .where((e) => isNote ? (e.result == 'NOTE' || e.result == 'PASS') : e.result == 'PASS')
-        .toList();
+    if (isNote) {
+      _notes = all.where((e) => e.result == 'NOTE').toList();
+    }
+    final logs = all.where((e) => e.result == 'PASS').toList();
     if (!mounted) return;
     setState(() {
       _item = item;
@@ -74,9 +76,15 @@ class _LogsPageState extends State<LogsPage> {
     return l10n.localeName == 'zh' ? '$pos任务' : pos;
   }
 
-  Future<void> _openDetail(LogEntry e) async {
-    await Navigator.of(context)
-        .push(MaterialPageRoute(builder: (_) => LogDetailPage(entry: e)));
+  /// 该次（同阶/级/次位置）的全部书写记录。
+  List<LogEntry> _notesOf(LogEntry pass) => _notes
+      .where((n) => n.grade == pass.grade && n.level == pass.level && n.rep == pass.rep)
+      .toList();
+
+  Future<void> _openDetail(LogEntry pass) async {
+    await Navigator.of(context).push(MaterialPageRoute(
+      builder: (_) => LogDetailPage(pass: pass, notes: _notesOf(pass)),
+    ));
   }
 
   @override
@@ -94,10 +102,11 @@ class _LogsPageState extends State<LogsPage> {
                   padding: const EdgeInsets.all(16),
                   children: [
                     for (final e in _logs)
-                      if (isNote && e.result == 'NOTE')
-                        _NoteCard(
-                          summary: e.note ?? '',
+                      if (isNote)
+                        _SessionCard(
                           when: _when(l10n, e.createdAt),
+                          pos: _pos(l10n, e),
+                          count: _notesOf(e).length,
                           onTap: () => _openDetail(e),
                         )
                       else
@@ -120,17 +129,22 @@ class _LogsPageState extends State<LogsPage> {
   }
 }
 
-/// 记录类型的一笔书写记录：内容摘要 + 时间，点击进记录详情页。
-class _NoteCard extends StatelessWidget {
-  final String summary;
+/// 记录类型的一次任务完成条目：位置 + 时间 + 笔数，点击进该次综合详情。
+class _SessionCard extends StatelessWidget {
   final String when;
+  final String pos;
+  final int count;
   final VoidCallback onTap;
-  const _NoteCard({required this.summary, required this.when, required this.onTap});
+  const _SessionCard({
+    required this.when,
+    required this.pos,
+    required this.count,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final firstLine = summary.replaceAll('\n', ' ').trim();
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(12),
@@ -145,19 +159,18 @@ class _NoteCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(firstLine,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(fontSize: 14, height: 1.5)),
-            const SizedBox(height: 8),
+            Text(pos,
+                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+            const SizedBox(height: 6),
             Row(
               children: [
-                const Icon(Icons.article_outlined, size: 14, color: AppColors.mut),
-                const SizedBox(width: 4),
                 Expanded(
                   child: Text(when,
                       style: const TextStyle(fontSize: 12, color: AppColors.mut)),
                 ),
+                Text(l10n.noteInSession(count),
+                    style: const TextStyle(fontSize: 12, color: AppColors.mut)),
+                const SizedBox(width: 10),
                 Text(l10n.logDetailOpen,
                     style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.acc)),
                 const Icon(Icons.chevron_right, size: 16, color: AppColors.acc),

@@ -212,6 +212,18 @@ abstract class AppLocalizations {
   /// **'On failure'**
   String get fieldFailRule;
 
+  /// No description provided for @fieldBpm.
+  ///
+  /// In en, this message translates to:
+  /// **'Tempo BPM'**
+  String get fieldBpm;
+
+  /// No description provided for @bpmHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Metronome tempo used on execution (40–208, default 120)'**
+  String get bpmHint;
+
   /// No description provided for @hintName.
   ///
   /// In en, this message translates to:
@@ -763,6 +775,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'View detail'**
   String get logDetailOpen;
+
+  /// No description provided for @noteInSession.
+  ///
+  /// In en, this message translates to:
+  /// **'{n} entries in this session'**
+  String noteInSession(int n);
 }
 
 class _AppLocalizationsDelegate

@@ -30,6 +30,7 @@ class _CreatePageState extends State<CreatePage> {
   final _plus = TextEditingController(text: '1');
   final _beginG = TextEditingController(text: '0');
   final _goal = TextEditingController();
+  final _bpm = TextEditingController(text: '120'); // 运动：节拍器 BPM（默认 120）
   late String _method = '运动';
   String _listFilePath = '';
   String _listFileName = '';
@@ -50,6 +51,7 @@ class _CreatePageState extends State<CreatePage> {
       _plus.text = '${it.plusVar}';
       _beginG.text = '${it.displayBeginGrade}';
       _goal.text = it.goalText;
+      _bpm.text = '${it.bpm}';
       _listFilePath = it.listFilePath;
       _listFileName = it.listFileName;
     }
@@ -63,6 +65,7 @@ class _CreatePageState extends State<CreatePage> {
     _plus.dispose();
     _beginG.dispose();
     _goal.dispose();
+    _bpm.dispose();
     super.dispose();
   }
 
@@ -90,6 +93,8 @@ class _CreatePageState extends State<CreatePage> {
     }
     setState(() => _nameError = null);
     final failRule = _failRule == '回退' ? 'RECEDE' : 'STAY';
+    final bpmRaw = int.tryParse(_bpm.text.trim());
+    final bpm = bpmRaw == null ? 120 : bpmRaw.clamp(40, 208);
     if (_isEdit) {
       final src = widget.item!;
       final updated = TrainingItem(
@@ -105,6 +110,7 @@ class _CreatePageState extends State<CreatePage> {
         plusVar: plus,
         dGrade: TrainingItem.dGradeFromDisplay(grade),
         beginGrade: TrainingItem.beginGradeFromDisplay(beginG),
+        bpm: bpm,
         failRule: failRule,
         status: src.status,
         createdAt: src.createdAt,
@@ -126,6 +132,7 @@ class _CreatePageState extends State<CreatePage> {
       plusVar: plus,
       dGrade: TrainingItem.dGradeFromDisplay(grade),
       beginGrade: TrainingItem.beginGradeFromDisplay(beginG),
+      bpm: bpm,
       failRule: failRule,
       status: 'ACTIVE',
       createdAt: DateTime.now().toIso8601String().substring(0, 10),
@@ -209,6 +216,7 @@ class _CreatePageState extends State<CreatePage> {
             ],
           ),
           if (_method == '事务' || _method == '学习') _listField(l10n),
+          if (_method == '运动') _bpmField(l10n),
           const SizedBox(height: 2),
           _field(l10n.fieldGoal, controller: _goal, hint: l10n.hintGoal),
           const SizedBox(height: 6),
@@ -428,6 +436,29 @@ class _CreatePageState extends State<CreatePage> {
           const SizedBox(height: 5),
           Text(l10n.listFileHint,
               style: const TextStyle(fontSize: 11, color: AppColors.mut)),
+        ],
+      ),
+    );
+  }
+
+  /// 运动：节拍器 BPM 输入（默认 120，40~208）。
+  Widget _bpmField(AppLocalizations l10n) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 14),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(left: 2, bottom: 6),
+            child: Text(l10n.fieldBpm,
+                style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
+          ),
+          TextField(
+            controller: _bpm,
+            keyboardType: TextInputType.number,
+            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+            decoration: InputDecoration(hintText: l10n.bpmHint),
+          ),
         ],
       ),
     );
