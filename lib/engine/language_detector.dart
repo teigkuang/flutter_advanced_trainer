@@ -52,8 +52,11 @@ class LangSegment {
   String toString() => '[$lang] $text';
 }
 
-/// 单字符脚本判定（简化版，覆盖常见语种）。
-TtsLang _scriptOfChar(String ch) {
+/// 单字符脚本判定。
+///
+/// 返回对应语言；对标点/数字/符号等**中性字符**返回 null，
+/// 由切分逻辑把它们并入相邻语言片段（不单独成段，避免 `it's` 被拆、`!` 被读出）。
+TtsLang? _scriptOfChar(String ch) {
   final r = ch.codeUnitAt(0);
   // 假名：平假名 U+3040–U+309F，片假名 U+30A0–U+30FF
   if ((r >= 0x3040 && r <= 0x309F) || (r >= 0x30A0 && r <= 0x30FF)) return TtsLang.ja;
@@ -61,15 +64,41 @@ TtsLang _scriptOfChar(String ch) {
   if (r >= 0xAC00 && r <= 0xD7A3) return TtsLang.ko;
   // 西里尔 U+0400–U+04FF
   if (r >= 0x0400 && r <= 0x04FF) return TtsLang.ru;
-  // 拉丁字母
+  // 拉丁字母（含重音字符）
   if ((r >= 0x0041 && r <= 0x005A) || (r >= 0x0061 && r <= 0x007A) ||
       (r >= 0x00C0 && r <= 0x00FF)) {
     return TtsLang.en;
   }
-  // CJK 统一汉字 U+4E00–U+9FFF（含日文汉字），默认中文，稍后按上下文修正
+  // CJK 统一汉字 U+4E00–U+9FFF（含日文汉字）
   if (r >= 0x4E00 && r <= 0x9FFF) return TtsLang.zh;
-  // 其他（数字、标点、空白、全角符号）→ 返回 null 表示并入相邻片段
-  return TtsLang.zh; // 占位，调用方按需处理
+  // 其他（数字、标点、空白、符号、日文长音符等）→ 中性，并入相邻片段
+  return null;
+}
+
+/// 判断一个字符（rune）是否为「中性字符」（无语言归属：空白/标点/数字/符号）。
+/// 用于过滤纯符号片段，避免产生无意义的朗读段。
+bool _isNeutralRune(int r) {
+  // 假名
+  if ((r >= 0x3040 && r <= 0x309F) || (r >= 0x30A0 && r <= 0x30FF)) return false;
+  // 谚文
+  if (r >= 0xAC00 && r <= 0xD7A3) return false;
+  // 西里尔
+  if (r >= 0x0400 && r <= 0x04FF) return false;
+  // 拉丁
+  if ((r >= 0x0041 && r <= 0x005A) || (r >= 0x0061 && r <= 0x007A) ||
+      (r >= 0x00C0 && r <= 0x00FF)) {
+    return false;
+  }
+  // CJK 汉字
+  if (r >= 0x4E00 && r <= 0x9FFF) return false;
+  return true; // 其他均为中性
+}
+
+/// 判断 StringBuffer 末尾字符是否为 CJK 汉字（用于“汉字直接紧邻假名”判定）。
+bool _bufEndsWithHan(StringBuffer buf) {
+  if (buf.isEmpty) return false;
+  final last = buf.toString().runes.last;
+  return last >= 0x4E00 && last <= 0x9FFF;
 }
 
 /// 简化拉丁词表识别：命中常见词 → 对应语言。
@@ -98,48 +127,76 @@ TtsLang _latinWordLang(String word) {
 }
 
 /// 把一段可能混排的文本切成「连续同语言」片段（相邻同语言已合并）。
+///
+/// 规则：
+///   - 标点/数字/符号（_scriptOfChar 返回 null）并入相邻语言片段，不单独成段。
+///   - 括号（（）()）作为强语言边界：括号内内容独立判定语言。
+///     如「早い（早）」→「早い」(ja) +「（早）」(zh)。
+///   - 汉字紧邻假名（同一无分隔串）→ 并入 ja；纯汉字段 → zh。
+///     如「漢字カタカナ」→ ja；「词汇」→ zh。
 List<LangSegment> splitByLanguage(String text) {
   if (text.isEmpty) return const [];
   final segments = <LangSegment>[];
   final buf = StringBuffer();
-  TtsLang? cur;
+  TtsLang? cur; // 当前片段语言；null 表示尚未有语言字符（可能只有前导中性字符）
 
   void flush() {
     if (buf.isEmpty) return;
     final raw = buf.toString();
+    // 跳过无任何语言字符的片段（纯空白/纯符号），避免产生无意义的朗读段。
+    if (raw.runes.every((r) => _isNeutralRune(r))) {
+      buf.clear();
+      cur = null;
+      return;
+    }
     final lang = _classifySegment(raw, cur ?? TtsLang.zh);
     segments.add(LangSegment(lang: lang, text: raw));
     buf.clear();
+    cur = null;
   }
 
   for (final ch in text.split('')) {
     if (ch.trim().isEmpty) {
-      // 空白作为片段边界：结束当前片段（合并逻辑由 _classifySegment 保证相邻同语言合并）。
+      // 空白作为「软边界」：保留空格并结束当前片段（相邻同语言由 merge 阶段合并）。
+      if (buf.isNotEmpty) {
+        buf.write(ch);
+        flush();
+      }
+      continue;
+    }
+    if (ch == '（' || ch == '(') {
+      // 左括号：强制结束当前片段（括号内内容独立判定语言），括号本身并入即将开始的片段。
       flush();
-      cur = null;
+      buf.write(ch);
       continue;
     }
     final lang = _scriptOfChar(ch);
-    if (lang == TtsLang.en) {
-      if (cur != TtsLang.en) {
-        flush();
-        cur = TtsLang.en;
-      }
+    if (lang == null) {
+      // 中性字符（标点/数字/符号）：并入当前片段；若尚无语言片段则暂存。
       buf.write(ch);
-    } else if (lang == TtsLang.zh) {
-      // 汉字：若当前是日文片段（前面已有假名），并入 ja；否则按 zh 起片段。
-      if (cur != TtsLang.zh && cur != TtsLang.ja) {
-        flush();
-        cur = TtsLang.zh;
-      }
-      buf.write(ch);
-    } else {
-      if (cur != lang) {
-        flush();
-        cur = lang;
-      }
-      buf.write(ch);
+      continue;
     }
+    // 有明确语言字符。
+    if (cur == null) {
+      cur = lang;
+      buf.write(ch);
+      continue;
+    }
+    // 中日紧邻：仅当汉字**直接**紧邻假名（段末为汉字）才并入 ja，
+    // 如「漢字カタカナ」→ ja；而「词汇：」「来自」（空格/冒号分隔）不并入。
+    if (lang == TtsLang.ja && cur == TtsLang.zh && _bufEndsWithHan(buf)) {
+      cur = TtsLang.ja;
+      buf.write(ch);
+      continue;
+    }
+    if (cur == lang) {
+      buf.write(ch);
+      continue;
+    }
+    // 语言切换：结束当前片段，起新片段。
+    flush();
+    cur = lang;
+    buf.write(ch);
   }
   flush();
 
