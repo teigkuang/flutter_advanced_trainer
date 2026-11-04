@@ -781,6 +781,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{n} entries in this session'**
   String noteInSession(int n);
+
+  /// No description provided for @handledInSession.
+  ///
+  /// In en, this message translates to:
+  /// **'{n} items handled'**
+  String handledInSession(int n);
 }
 
 class _AppLocalizationsDelegate

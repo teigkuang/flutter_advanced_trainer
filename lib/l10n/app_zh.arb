@@ -250,5 +250,11 @@
     "placeholders": {
       "n": { "type": "int" }
     }
+  },
+  "handledInSession": "本次共 {n} 件事",
+  "@handledInSession": {
+    "placeholders": {
+      "n": { "type": "int" }
+    }
   }
 }

@@ -15,6 +15,14 @@ import '../engine/models.dart';
 import '../l10n/app_localizations.dart';
 import 'theme.dart';
 
+/// 清单子页完成时的返回结果：推进后的游标 + 本次实际勾选的处理事项文本。
+/// 事务任务借此把"这次处理了哪些事情"带回去，随 PASS 记录落库，供后续回顾。
+class ChecklistResult {
+  final int next; // 推进后的全局清单游标
+  final List<String> texts; // 本次勾选条目的标题（如 扫地/洗衣服/倒垃圾）
+  const ChecklistResult({required this.next, required this.texts});
+}
+
 class ChecklistPage extends StatefulWidget {
   final TrainingItem item;
   final int ref; // 当前项参考量（需勾选条数）
@@ -82,7 +90,11 @@ class _ChecklistPageState extends State<ChecklistPage> {
 
   void _finish() {
     final next = (widget.cursorStart + _taken) % _entries.length;
-    Navigator.of(context).pop(next);
+    final texts = <String>[
+      for (int k = 0; k < _taken; k++)
+        if (_checked[k]) _at(k).title,
+    ];
+    Navigator.of(context).pop(ChecklistResult(next: next, texts: texts));
   }
 
   @override

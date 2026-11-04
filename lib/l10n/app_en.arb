@@ -250,5 +250,11 @@
     "placeholders": {
       "n": { "type": "int" }
     }
+  },
+  "handledInSession": "{n} items handled",
+  "@handledInSession": {
+    "placeholders": {
+      "n": { "type": "int" }
+    }
   }
 }

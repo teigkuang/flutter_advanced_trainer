@@ -398,4 +398,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String noteInSession(int n) {
     return '本次共 $n 笔记录';
   }
+
+  @override
+  String handledInSession(int n) {
+    return '本次共 $n 件事';
+  }
 }

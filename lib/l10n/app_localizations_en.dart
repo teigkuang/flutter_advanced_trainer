@@ -404,4 +404,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String noteInSession(int n) {
     return '$n entries in this session';
   }
+
+  @override
+  String handledInSession(int n) {
+    return '$n items handled';
+  }
 }

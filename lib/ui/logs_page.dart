@@ -82,8 +82,16 @@ class _LogsPageState extends State<LogsPage> {
       .toList();
 
   Future<void> _openDetail(LogEntry pass) async {
+    final isNote = _item?.taskType == '记录';
+    // 记录类型：该次全部书写记录；事务类型：本次勾选的处理事项（每行一件事）。
+    final contents = isNote
+        ? _notesOf(pass).map((n) => n.note ?? '').toList()
+        : (pass.note ?? '')
+            .split('\n')
+            .where((s) => s.trim().isNotEmpty)
+            .toList();
     await Navigator.of(context).push(MaterialPageRoute(
-      builder: (_) => LogDetailPage(pass: pass, notes: _notesOf(pass)),
+      builder: (_) => LogDetailPage(pass: pass, contents: contents),
     ));
   }
 
@@ -91,6 +99,7 @@ class _LogsPageState extends State<LogsPage> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final isNote = _item?.taskType == '记录';
+    final isTask = _item?.taskType == '事务';
     final title = _item == null ? l10n.logsTitle : '${_item!.name} · ${l10n.logsTitle}';
     return Scaffold(
       appBar: AppBar(title: Text(title)),
@@ -102,11 +111,17 @@ class _LogsPageState extends State<LogsPage> {
                   padding: const EdgeInsets.all(16),
                   children: [
                     for (final e in _logs)
-                      if (isNote)
+                      if (isNote || isTask)
                         _SessionCard(
                           when: _when(l10n, e.createdAt),
                           pos: _pos(l10n, e),
-                          count: _notesOf(e).length,
+                          countLabel: isNote
+                              ? l10n.noteInSession(_notesOf(e).length)
+                              : l10n.handledInSession(
+                                  (e.note ?? '')
+                                      .split('\n')
+                                      .where((s) => s.trim().isNotEmpty)
+                                      .length),
                           onTap: () => _openDetail(e),
                         )
                       else
@@ -129,16 +144,16 @@ class _LogsPageState extends State<LogsPage> {
   }
 }
 
-/// 记录类型的一次任务完成条目：位置 + 时间 + 笔数，点击进该次综合详情。
+/// 记录/事务类型的一次任务完成条目：位置 + 时间 + 内容计数，点击进该次回顾详情。
 class _SessionCard extends StatelessWidget {
   final String when;
   final String pos;
-  final int count;
+  final String countLabel;
   final VoidCallback onTap;
   const _SessionCard({
     required this.when,
     required this.pos,
-    required this.count,
+    required this.countLabel,
     required this.onTap,
   });
 
@@ -168,7 +183,7 @@ class _SessionCard extends StatelessWidget {
                   child: Text(when,
                       style: const TextStyle(fontSize: 12, color: AppColors.mut)),
                 ),
-                Text(l10n.noteInSession(count),
+                Text(countLabel,
                     style: const TextStyle(fontSize: 12, color: AppColors.mut)),
                 const SizedBox(width: 10),
                 Text(l10n.logDetailOpen,

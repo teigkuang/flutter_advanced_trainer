@@ -31,6 +31,7 @@ class _ExecutePageState extends State<ExecutePage> {
   late final List<bool> _done;
   late final List<int> _seq;
   late int _listCursor; // 事务/学习：全局清单游标（仅整项完成时推进，并持久化到任务）
+  final List<String> _handled = []; // 事务：本次任务实际勾选的处理事项（供 PASS 记录回顾）
 
   @override
   void initState() {
@@ -58,17 +59,19 @@ class _ExecutePageState extends State<ExecutePage> {
       return;
     }
     if (type == '事务' || type == '学习') {
-      final next = await Navigator.of(context).push<int>(MaterialPageRoute(
+      final res = await Navigator.of(context).push<ChecklistResult>(MaterialPageRoute(
         builder: (_) => ChecklistPage(
             item: widget.item, ref: ref, cursorStart: _listCursor),
       ));
-      if (next != null && mounted) {
+      if (res != null && mounted) {
         setState(() {
           _done[i] = true;
-          _listCursor = next;
+          _listCursor = res.next;
         });
+        // 事务：记录本次实际勾选的处理事项，供完成后回顾"这次处理了哪些事情"。
+        if (type == '事务') _handled.addAll(res.texts);
         // 游标推进立即落库：中途退出执行也不丢失已学到的位置。
-        await AppScope.of(context).repository.updateListCursor(widget.item.id!, next);
+        await AppScope.of(context).repository.updateListCursor(widget.item.id!, res.next);
       }
       return;
     }
@@ -104,6 +107,10 @@ class _ExecutePageState extends State<ExecutePage> {
       rep: cur.rep,
       target: ProgressEngine.seqToString(_seq),
       result: 'PASS',
+      // 事务：本次实际勾选的处理事项随 PASS 落库（每行一条），记录页可回顾。
+      note: widget.item.taskType == '事务' && _handled.isNotEmpty
+          ? _handled.join('\n')
+          : null,
       createdAt: DateTime.now().toIso8601String(),
     ));
     if (!mounted) return;
