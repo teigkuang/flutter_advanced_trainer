@@ -12,6 +12,7 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 
 import '../engine/checklist_parser.dart';
 import '../engine/models.dart';
+import '../engine/tts_service.dart';
 import '../l10n/app_localizations.dart';
 import 'theme.dart';
 
@@ -44,11 +45,53 @@ class _ChecklistPageState extends State<ChecklistPage> {
   bool _loading = true;
   bool _loadError = false;
   int _taken = 0;
+  int _playingIndex = -1; // 当前正在朗读/已暂停的卡片索引，-1 表示无
+  final TtsService _tts = TtsService.instance;
 
   @override
   void initState() {
     super.initState();
+    _tts.onChanged = _onTtsChanged;
     _load();
+  }
+
+  @override
+  void dispose() {
+    _tts.onChanged = null;
+    // 离开清单页：停止全局朗读，复位按钮。
+    _tts.stop();
+    super.dispose();
+  }
+
+  /// TTS 状态/进度变化：若回到 idle，则复位正在播放的卡片按钮。
+  void _onTtsChanged() {
+    if (!mounted) return;
+    if (_tts.state == ReadState.idle) {
+      if (_playingIndex != -1) {
+        setState(() => _playingIndex = -1);
+      }
+    } else {
+      // 进度推进时刷新进度显示（按钮状态不变，仅进度文案变化）
+      if (_playingIndex != -1) setState(() {});
+    }
+  }
+
+  /// 点击播放/暂停/继续按钮。
+  void _onReadPressed(int i) {
+    final e = _at(i);
+    // 若点的是别的卡片正在朗读，先停掉那条，再开始这条。
+    if (_playingIndex != -1 && _playingIndex != i) {
+      _tts.stop();
+    }
+    if (_playingIndex == i) {
+      // 同一张卡：播放↔暂停↔继续 切换。
+      _tts.toggle();
+      return;
+    }
+    // 开始朗读这条。
+    _playingIndex = i;
+    _tts.speakAll(TtsService.unitsFor(e.title, e.body));
+    setState(() {});
   }
 
   Future<void> _load() async {
@@ -184,21 +227,26 @@ class _ChecklistPageState extends State<ChecklistPage> {
     final locked = !checked && i > 0 && !_checked[i - 1];
     final bg = checked ? AppColors.okSoft : (locked ? AppColors.dim : AppColors.card);
     final border = checked ? AppColors.okSoft : (locked ? AppColors.dim : AppColors.line);
-    return InkWell(
-      onTap: locked ? null : () => _toggle(i),
-      borderRadius: BorderRadius.circular(12),
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 10),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        decoration: BoxDecoration(
-          color: bg,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: border),
-        ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            AnimatedContainer(
+    // 朗读按钮状态：本卡正在播放/已暂停。
+    final isThisPlaying = _playingIndex == i && _tts.state == ReadState.playing;
+    final isThisPaused = _playingIndex == i && _tts.state == ReadState.paused;
+    final canRead = !locked; // 解锁的条目才可朗读
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      decoration: BoxDecoration(
+        color: bg,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: border),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // 左侧独立勾选图标：点击完成勾选（保持顺序约束），不再点击整卡。
+          GestureDetector(
+            onTap: locked ? null : () => _toggle(i),
+            behavior: HitTestBehavior.opaque,
+            child: AnimatedContainer(
               duration: const Duration(milliseconds: 150),
               width: 24,
               height: 24,
@@ -212,26 +260,44 @@ class _ChecklistPageState extends State<ChecklistPage> {
               ),
               child: checked ? const Icon(Icons.check, size: 15, color: Colors.white) : null,
             ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(e.title,
-                      style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
-                  if (e.body.isNotEmpty) ...[
-                    const SizedBox(height: 3),
-                    MarkdownBody(
-                      data: e.body,
-                      styleSheet: _mdStyle(context),
-                      shrinkWrap: true,
-                    ),
-                  ],
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(e.title,
+                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+                if (e.body.isNotEmpty) ...[
+                  const SizedBox(height: 3),
+                  MarkdownBody(
+                    data: e.body,
+                    styleSheet: _mdStyle(context),
+                    shrinkWrap: true,
+                  ),
                 ],
-              ),
+              ],
             ),
-          ],
-        ),
+          ),
+          const SizedBox(width: 8),
+          // 右下角：播放 / 暂停 / 继续 按钮。
+          IconButton(
+            onPressed: canRead ? () => _onReadPressed(i) : null,
+            visualDensity: VisualDensity.compact,
+            tooltip: isThisPlaying
+                ? l10n.readPause
+                : (isThisPaused ? l10n.readResume : l10n.readPlay),
+            icon: Icon(
+              isThisPlaying
+                  ? Icons.pause_circle
+                  : (isThisPaused ? Icons.play_circle : Icons.play_circle_outline),
+              color: isThisPlaying || isThisPaused
+                  ? AppColors.acc
+                  : (canRead ? AppColors.acc : AppColors.mut),
+              size: 28,
+            ),
+          ),
+        ],
       ),
     );
   }

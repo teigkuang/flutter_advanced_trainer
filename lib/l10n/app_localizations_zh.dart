@@ -403,4 +403,16 @@ class AppLocalizationsZh extends AppLocalizations {
   String handledInSession(int n) {
     return '本次共 $n 件事';
   }
+
+  @override
+  String get readPlay => '朗读';
+
+  @override
+  String get readPause => '暂停';
+
+  @override
+  String get readResume => '继续';
+
+  @override
+  String get readLangUnavailable => '部分语言的语音包暂不可用';
 }

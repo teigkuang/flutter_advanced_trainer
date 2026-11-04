@@ -409,4 +409,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String handledInSession(int n) {
     return '$n items handled';
   }
+
+  @override
+  String get readPlay => 'Read';
+
+  @override
+  String get readPause => 'Pause';
+
+  @override
+  String get readResume => 'Resume';
+
+  @override
+  String get readLangUnavailable => 'Voice packs for some languages are unavailable';
 }

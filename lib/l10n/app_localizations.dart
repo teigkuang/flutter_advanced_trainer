@@ -787,6 +787,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{n} items handled'**
   String handledInSession(int n);
+
+  /// 朗读：播放。
+  String get readPlay;
+
+  /// 朗读：暂停。
+  String get readPause;
+
+  /// 朗读：继续。
+  String get readResume;
+
+  /// 某语言暂不可用提示。
+  String get readLangUnavailable;
 }
 
 class _AppLocalizationsDelegate
