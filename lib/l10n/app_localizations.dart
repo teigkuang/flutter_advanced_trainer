@@ -788,16 +788,28 @@ abstract class AppLocalizations {
   /// **'{n} items handled'**
   String handledInSession(int n);
 
-  /// 朗读：播放。
+  /// No description provided for @readPlay.
+  ///
+  /// In en, this message translates to:
+  /// **'Read'**
   String get readPlay;
 
-  /// 朗读：暂停。
+  /// No description provided for @readPause.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause'**
   String get readPause;
 
-  /// 朗读：继续。
+  /// No description provided for @readResume.
+  ///
+  /// In en, this message translates to:
+  /// **'Resume'**
   String get readResume;
 
-  /// 某语言暂不可用提示。
+  /// No description provided for @readLangUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Voice packs for some languages are unavailable'**
   String get readLangUnavailable;
 }
 

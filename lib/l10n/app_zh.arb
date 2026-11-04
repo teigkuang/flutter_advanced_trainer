@@ -256,5 +256,9 @@
     "placeholders": {
       "n": { "type": "int" }
     }
-  }
+  },
+  "readPlay": "朗读",
+  "readPause": "暂停",
+  "readResume": "继续",
+  "readLangUnavailable": "部分语言的语音包暂不可用"
 }

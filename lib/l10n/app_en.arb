@@ -256,5 +256,9 @@
     "placeholders": {
       "n": { "type": "int" }
     }
-  }
+  },
+  "readPlay": "Read",
+  "readPause": "Pause",
+  "readResume": "Resume",
+  "readLangUnavailable": "Voice packs for some languages are unavailable"
 }

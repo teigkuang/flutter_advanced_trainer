@@ -420,5 +420,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get readResume => 'Resume';
 
   @override
-  String get readLangUnavailable => 'Voice packs for some languages are unavailable';
+  String get readLangUnavailable =>
+      'Voice packs for some languages are unavailable';
 }
