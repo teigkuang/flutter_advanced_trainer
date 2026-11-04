@@ -30,13 +30,15 @@ class ExecutePage extends StatefulWidget {
 class _ExecutePageState extends State<ExecutePage> {
   late final List<bool> _done;
   late final List<int> _seq;
-  int _listCursor = 0; // 事务/学习：全局清单游标（仅整项完成时推进）
+  late int _listCursor; // 事务/学习：全局清单游标（仅整项完成时推进，并持久化到任务）
 
   @override
   void initState() {
     super.initState();
     _seq = widget.startState.sequence;
     _done = List.filled(_seq.length, false);
+    // 从任务读回的持久化游标，保证下次执行从上次位置继续（而非从头）。
+    _listCursor = widget.item.listCursor;
   }
 
   int get _doneCount => _done.where((e) => e).length;
@@ -65,6 +67,8 @@ class _ExecutePageState extends State<ExecutePage> {
           _done[i] = true;
           _listCursor = next;
         });
+        // 游标推进立即落库：中途退出执行也不丢失已学到的位置。
+        await AppScope.of(context).repository.updateListCursor(widget.item.id!, next);
       }
       return;
     }

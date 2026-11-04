@@ -111,6 +111,7 @@ class _CreatePageState extends State<CreatePage> {
         dGrade: TrainingItem.dGradeFromDisplay(grade),
         beginGrade: TrainingItem.beginGradeFromDisplay(beginG),
         bpm: bpm,
+        listCursor: src.listCursor, // 编辑不清零清单游标
         failRule: failRule,
         status: src.status,
         createdAt: src.createdAt,

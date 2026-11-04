@@ -17,6 +17,7 @@ abstract class TrainingRepository {
   Future<int> createItem(TrainingItem item);
   Future<void> updateItem(TrainingItem item);
   Future<void> updateItemBpm(int id, int bpm); // 运动：执行中修改节拍器 BPM 后写回
+  Future<void> updateListCursor(int id, int cursor); // 事务/学习：清单游标推进后持久化
   Future<void> deleteItem(int id); // 级联删除：任务 + 进度 + 全部完成记录（单个事务）
   Future<ProgressState?> getProgress(int itemId);
   Future<void> saveProgress(int itemId, ProgressState st);
@@ -56,6 +57,7 @@ class SqliteTrainingRepository implements TrainingRepository {
       'd_grade': item.dGrade,
       'begin_grade': item.beginGrade,
       'bpm': item.bpm,
+      'list_cursor': item.listCursor,
       'fail_rule': item.failRule,
       'status': item.status,
       'created_at': item.createdAt,
@@ -80,6 +82,7 @@ class SqliteTrainingRepository implements TrainingRepository {
       'd_grade': item.dGrade,
       'begin_grade': item.beginGrade,
       'bpm': item.bpm,
+      'list_cursor': item.listCursor,
       'fail_rule': item.failRule,
       'status': item.status,
     }, where: 'id = ?', whereArgs: [item.id]);
@@ -89,6 +92,12 @@ class SqliteTrainingRepository implements TrainingRepository {
   Future<void> updateItemBpm(int id, int bpm) async {
     final db = await AppDatabase.instance;
     await db.update('training_item', {'bpm': bpm}, where: 'id = ?', whereArgs: [id]);
+  }
+
+  @override
+  Future<void> updateListCursor(int id, int cursor) async {
+    final db = await AppDatabase.instance;
+    await db.update('training_item', {'list_cursor': cursor}, where: 'id = ?', whereArgs: [id]);
   }
 
   @override
@@ -197,6 +206,7 @@ class SqliteTrainingRepository implements TrainingRepository {
         dGrade: row['d_grade'] as int,
         beginGrade: row['begin_grade'] as int,
         bpm: (row['bpm'] as int?) ?? 120,
+        listCursor: (row['list_cursor'] as int?) ?? 0,
         failRule: (row['fail_rule'] as String?) ?? 'STAY',
         status: (row['status'] as String?) ?? 'ACTIVE',
         createdAt: (row['created_at'] as String?) ?? '',
